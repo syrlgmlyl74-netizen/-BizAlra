@@ -1,27 +1,34 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import {
   Camera, MessageSquare, BarChart3, CalendarClock, DollarSign, BookOpen,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
+
+const CREAM_BG = "#FBF4E8";
+const NAVY = "#001830";
+const GRAY_TEXT = "#6B7280";
+const ICON_BG = "#E9EEF5";
 
 const CreatePage = () => {
   const navigate = useNavigate();
   const { t, lang } = useI18n();
   const isHe = lang === "he";
+  const [selectedTool, setSelectedTool] = useState("message");
+  const Arrow = isHe ? ChevronLeft : ChevronRight;
 
-  // Consolidated tools - Photo Studio now includes Product Photos functionality
   const toolTypes = [
-    { id: "studio",    icon: Camera,       titleKey: "tool.studio.title",     descKey: "tool.studio.desc",    route: "/create/product-photos", accent: true },
-    { id: "message",   icon: MessageSquare,titleKey: "tool.messages.title",   descKey: "tool.messages.desc",  route: "/create/messages",        accent: false },
-    { id: "analytics", icon: BarChart3,    titleKey: "tool.analytics.title",  descKey: "tool.analytics.desc", route: "/create/analytics",       accent: false },
-    { id: "time",      icon: CalendarClock,titleKey: "tool.time.title",       descKey: "tool.time.desc",      route: "/create/time",            accent: false },
-    { id: "pricing",   icon: DollarSign,   titleKey: "tool.pricing.title",    descKey: "tool.pricing.desc",   route: "/create/pricing",         accent: false },
-    { id: "journal",   icon: BookOpen,     titleKey: "tool.journal.title",    descKey: "tool.journal.desc",   route: "/journal",                accent: false },
+    { id: "studio",    icon: Camera,       title: "סטודיו תמונות",   desc: "תמונות מוצר, לוגו, פרופיל עסקי וסטורי", route: "/create/product-photos" },
+    { id: "message",   icon: MessageSquare, title: "הודעות AI",      desc: "ניסוח שיווקי חכם",              route: "/create/messages" },
+    { id: "analytics", icon: BarChart3,     title: "ניתוח עסקי",      desc: "תובנות ומסקנות חכמות",          route: "/create/analytics" },
+    { id: "time",      icon: CalendarClock, title: "ניהול זמן",       desc: "אופטימיזציה חכמה",            route: "/create/time" },
+    { id: "pricing",   icon: DollarSign,   title: "תמחור חכם",       desc: "אסטרטגיית מחירים",             route: "/create/pricing" },
+    { id: "journal",   icon: BookOpen,     title: "יומן עסקי",       desc: "ניהול פגישות ותזכורות",         route: "/journal" },
   ];
 
   return (
-    <div className="px-5 pt-8 pb-28" dir={isHe ? "rtl" : "ltr"}>
-      {/* Header */}
+    <div className="min-h-screen pb-28 px-5" dir={isHe ? "rtl" : "ltr"} style={{ backgroundColor: CREAM_BG }}>
       <div className="mb-7">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
           {isHe ? "סטודיו AI" : "AI Studio"}
@@ -31,48 +38,42 @@ const CreatePage = () => {
         </h1>
       </div>
 
-      {/* Uniform grid of tool cards — minimalist luxury cubes */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-3">
         {toolTypes.map((tool, i) => {
           const IconComp = tool.icon;
-          const isFirst = i === 0;
+          const isActive = selectedTool === tool.id;
+
           return (
             <button
               key={tool.id}
-              onClick={() => navigate(tool.route)}
-              className="flex flex-col items-center justify-center p-5 rounded-2xl hover:scale-[1.03] transition-all duration-200 group animate-float-up aspect-square"
-              style={{ 
-                animationDelay: `${i * 55}ms`,
-                background: isFirst ? "hsl(210 100% 12%)" : "hsl(0 0% 98%)",
-                boxShadow: isFirst 
-                  ? "0 6px 24px -4px hsl(210 100% 12% / 0.4), 0 3px 12px -2px hsl(39 48% 56% / 0.2)"
-                  : "0 2px 12px -2px hsl(0 0% 0% / 0.06), 0 1px 4px -1px hsl(0 0% 0% / 0.04)",
-                border: isFirst ? "none" : "1px solid hsl(0 0% 92%)"
+              onClick={() => {
+                setSelectedTool(tool.id);
+                navigate(tool.route);
               }}
+              className={`relative w-full rounded-3xl bg-white shadow-[0_18px_50px_-28px_rgba(0,24,48,0.18)] transition-all duration-300 ease-out overflow-hidden ${isActive ? "border border-[#001830]" : "border border-transparent hover:border-slate-200"}`}
+              style={{ animationDelay: `${i * 55}ms` }}
             >
-              <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-                style={{ 
-                  background: isFirst ? "hsl(210 100% 16%)" : "hsl(0 0% 94%)"
-                }}
-              >
-                <IconComp
-                  size={22}
-                  strokeWidth={1.5}
-                  style={{ color: isFirst ? "hsl(39 48% 56%)" : "hsl(210 100% 20%)" }}
-                />
-              </div>
-              <div 
-                className="text-sm font-bold text-center leading-snug mb-1"
-                style={{ color: isFirst ? "hsl(39 48% 56%)" : "hsl(210 100% 12%)" }}
-              >
-                {t(tool.titleKey)}
-              </div>
-              <div 
-                className="text-[10px] text-center leading-relaxed opacity-80 px-1"
-                style={{ color: isFirst ? "hsl(39 48% 70%)" : "hsl(0 0% 50%)" }}
-              >
-                {t(tool.descKey)}
+              {isActive && <div className="absolute top-0 right-0 h-full w-1 bg-[#001830]" />}
+
+              <div className="flex items-center justify-between gap-4 px-5 py-5">
+                <div className="flex items-center gap-4 flex-row-reverse">
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: ICON_BG }}>
+                    <IconComp size={24} strokeWidth={1.5} style={{ color: NAVY }} />
+                  </div>
+
+                  <div className="text-right">
+                    <div className="text-lg font-semibold leading-snug" style={{ color: NAVY }}>
+                      {tool.title}
+                    </div>
+                    <div className="text-sm leading-relaxed mt-1" style={{ color: GRAY_TEXT }}>
+                      {tool.desc}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#F1F6FB]">
+                  <Arrow size={18} strokeWidth={2} style={{ color: NAVY, opacity: 0.65 }} />
+                </div>
               </div>
             </button>
           );

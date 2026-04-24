@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -5,7 +6,7 @@ import {
   ChevronLeft, ChevronRight,
 } from "lucide-react";
 
-const NAVY   = "#0D2344";
+const NAVY   = "#001830";
 const PURPLE = "#0D2344";
 
 const CreatePage = () => {
@@ -13,54 +14,55 @@ const CreatePage = () => {
   const { t, lang } = useI18n();
   const isHe = lang === "he";
   const Arrow = isHe ? ChevronLeft : ChevronRight;
+  const [selectedTool, setSelectedTool] = useState("message");
 
   const tools = [
     {
       id: "studio",
       icon: Camera,
-      titleKey: "tool.studio.title",
-      descKey:  "tool.studio.desc",
-      route:    "/create/product-photos",
+      title: "סטודיו תמונות",
+      desc: "תמונות מוצר, לוגו, פרופיל עסקי וסטורי",
+      route: "/create/product-photos",
     },
     {
       id: "message",
       icon: MessageSquare,
-      titleKey: "tool.messages.title",
-      descKey:  "tool.messages.desc",
-      route:    "/create/messages",
+      title: "הודעות AI",
+      desc: "ניסוח שיווקי חכם",
+      route: "/create/messages",
     },
     {
       id: "analytics",
       icon: BarChart3,
-      titleKey: "tool.analytics.title",
-      descKey:  "tool.analytics.desc",
-      route:    "/create/analytics",
+      title: "ניתוח עסקי",
+      desc: "תובנות ומסקנות חכמות",
+      route: "/create/analytics",
     },
     {
       id: "time",
       icon: CalendarClock,
-      titleKey: "tool.time.title",
-      descKey:  "tool.time.desc",
-      route:    "/create/time",
+      title: "ניהול זמן",
+      desc: "אופטימיזציה חכמה",
+      route: "/create/time",
     },
     {
       id: "pricing",
       icon: DollarSign,
-      titleKey: "tool.pricing.title",
-      descKey:  "tool.pricing.desc",
-      route:    "/create/pricing",
+      title: "תמחור חכם",
+      desc: "אסטרטגיית מחירים",
+      route: "/create/pricing",
     },
     {
       id: "journal",
       icon: BookOpen,
-      titleKey: "tool.journal.title",
-      descKey:  "tool.journal.desc",
-      route:    "/journal",
+      title: "יומן עסקי",
+      desc: "ניהול פגישות ותזכורות",
+      route: "/journal",
     },
   ];
 
   return (
-    <div className="pb-28" dir={isHe ? "rtl" : "ltr"}>
+    <div className="min-h-screen pb-28 bg-[#f8f2e6]" dir={isHe ? "rtl" : "ltr"}>
       {/* Header */}
       <div className="px-5 pt-8 mb-6">
         <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
@@ -78,37 +80,46 @@ const CreatePage = () => {
       <div className="flex flex-col gap-3 px-5">
         {tools.map((tool, i) => {
           const IconComp = tool.icon;
+          const isActive = selectedTool === tool.id;
+
           return (
             <button
               key={tool.id}
-              onClick={() => navigate(tool.route)}
-              className="w-full glass-card rounded-2xl flex items-center justify-between px-4 py-4 group hover:border-accent/40 active:scale-[0.99] transition-all duration-200 animate-float-up"
+              onClick={() => {
+                setSelectedTool(tool.id);
+                navigate(tool.route);
+              }}
+              className={`relative w-full rounded-2xl bg-white shadow-sm border transition-all duration-300 ease-out overflow-hidden group ${isActive ? "border-[1px] border-[#001830]" : "border border-transparent hover:border-slate-200"}`}
               style={{ animationDelay: `${i * 55}ms` }}
             >
-              {/* Icon + text */}
-              <div className="flex items-center gap-4">
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-110"
-                  style={{ background: "hsl(252 73% 96%)" }}
-                >
-                  <IconComp size={20} strokeWidth={1.5} style={{ color: PURPLE }} />
-                </div>
-                <div className="text-start">
-                  <div className="text-sm font-bold leading-snug" style={{ color: NAVY }}>
-                    {t(tool.titleKey)}
-                  </div>
-                  <div className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
-                    {t(tool.descKey)}
-                  </div>
-                </div>
-              </div>
+              {isActive && (
+                <div className="absolute top-0 right-0 h-full w-1 bg-[#001830]" />
+              )}
 
-              {/* Arrow */}
-              <div
-                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:translate-x-0.5 shrink-0"
-                style={{ background: "hsl(220 18% 95%)" }}
-              >
-                <Arrow size={14} strokeWidth={2} style={{ color: NAVY, opacity: 0.5 }} />
+              <div className="flex items-center justify-between gap-4 px-4 py-4 transition-all duration-300">
+                <div className="flex items-center gap-4 flex-row-reverse">
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
+                    style={{ background: "hsl(252 73% 96%)" }}
+                  >
+                    <IconComp size={20} strokeWidth={1.5} style={{ color: PURPLE }} />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-bold leading-snug" style={{ color: NAVY }}>
+                      {tool.title}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
+                      {tool.desc}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300"
+                  style={{ background: "hsl(220 18% 95%)" }}
+                >
+                  <Arrow size={14} strokeWidth={2} style={{ color: NAVY, opacity: 0.5 }} />
+                </div>
               </div>
             </button>
           );

@@ -12,7 +12,7 @@ const SupportPage = () => {
   const [name, setName]       = useState("");
   const [email, setEmail]     = useState("");
   const [message, setMessage] = useState("");
-  const [sent, setSent]       = useState(false);
+  const [status, setStatus]   = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const faqs = [
     { q: t("faq.q1"), a: t("faq.a1") },
@@ -22,11 +22,48 @@ const SupportPage = () => {
     { q: t("faq.q5"), a: t("faq.a5") },
   ];
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!name || !email || !message) return;
-    setSent(true);
-    setName(""); setEmail(""); setMessage("");
-    setTimeout(() => setSent(false), 4000);
+
+    const mailtoSubject = encodeURIComponent(isHe ? "פנייה מ-BizAIra" : "BizAIra Contact Request");
+    const mailtoBody = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+    const fallbackMailto = `mailto:sg0549616580@gmail.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+
+    setStatus("sending");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (response.ok) {
+        setStatus("sent");
+        setName("");
+        setEmail("");
+        setMessage("");
+        return;
+      }
+
+      const payload = await response.json().catch(() => null);
+      if (payload?.error === "SMTP_NOT_CONFIGURED") {
+        window.location.href = fallbackMailto;
+        setStatus("sent");
+        setName("");
+        setEmail("");
+        setMessage("");
+        return;
+      }
+
+      throw new Error("Contact send failed");
+    } catch {
+      window.location.href = fallbackMailto;
+      setStatus("sent");
+      setName("");
+      setEmail("");
+      setMessage("");
+    }
   };
 
   return (
@@ -163,14 +200,21 @@ const SupportPage = () => {
           {/* Send button */}
           <button
             onClick={handleSend}
-            disabled={!name || !email || !message}
+            disabled={!name || !email || !message || status === "sending"}
             className="w-full gradient-glow glow-shadow text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:scale-[1.02] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             <Send size={16} />
-            {sent
-              ? (isHe ? "נשלח! ✓" : "Sent! ✓")
-              : t("support.send")}
+            {status === "sending"
+              ? (isHe ? "שולח..." : "Sending...")
+              : status === "sent"
+                ? (isHe ? "נשלח! ✓" : "Sent! ✓")
+                : t("support.send")}
           </button>
+          {status === "sent" && (
+            <p className="text-sm font-semibold text-emerald-600 mt-3">
+              {isHe ? "ההודעה נשלחה בהצלחה." : "Your message has been sent successfully."}
+            </p>
+          )}
         </div>
       </section>
     </div>

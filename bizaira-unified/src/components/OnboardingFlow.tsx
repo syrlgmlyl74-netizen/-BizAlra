@@ -15,19 +15,38 @@ interface OnboardingFlowProps {
   onComplete: () => void;
 }
 
-type Step = "greeting" | "business" | "business-info" | "audience" | "audience-info" | "goal" | "done";
+type Step = "greeting" | "language" | "business" | "audience" | "tone" | "goal" | "done";
+
+type LangOption = {
+  label: string;
+  value: "en" | "he" | "es" | "fr" | "ar" | "ru";
+  Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+};
 
 const PURPLE = "#0D2344";
 const NAVY   = "#0D2344";
 
+const languageOptions: LangOption[] = [
+  { label: "English", value: "en", Icon: Globe },
+  { label: "עברית", value: "he", Icon: Globe },
+  { label: "Español", value: "es", Icon: Globe },
+  { label: "Français", value: "fr", Icon: Globe },
+  { label: "العربية", value: "ar", Icon: Globe },
+  { label: "Русский", value: "ru", Icon: Globe },
+];
+
 const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
-  const { lang } = useI18n();
+  const { lang, setLang } = useI18n();
   const { user } = useAuth();
   const isHe = lang === "he";
 
   const [step, setStep]             = useState<Step>("greeting");
+  const [selectedLanguage, setSelectedLanguage] = useState<LangOption | null>(
+    languageOptions.find((option) => option.value === lang) ?? null
+  );
   const [businessType, setBusinessType] = useState("");
   const [audience, setAudience]         = useState("");
+  const [tone, setTone]                 = useState("");
   const [goal, setGoal]                 = useState("");
 
   const businessTypes: { label: string; Icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }[] = isHe
@@ -74,6 +93,20 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         { label: "General",         Icon: Globe       },
       ];
 
+  const tones: { label: string; Icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }[] = isHe
+    ? [
+        { label: "יוקרתי ומעודן", Icon: Award },
+        { label: "חם ומזמין",      Icon: Heart },
+        { label: "מקצועי ואמין",   Icon: Briefcase },
+        { label: "נועז ומודרני",   Icon: Monitor },
+      ]
+    : [
+        { label: "Luxury & Polished", Icon: Award },
+        { label: "Warm & Inviting",   Icon: Heart },
+        { label: "Professional & Trusted", Icon: Briefcase },
+        { label: "Bold & Modern",     Icon: Monitor },
+      ];
+
   const goals: { label: string; Icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }[] = isHe
     ? [
         { label: "יותר מכירות",     Icon: TrendingUp  },
@@ -92,6 +125,11 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         { label: "Attract Clients",        Icon: UserPlus    },
       ];
 
+  const handleLanguageSelect = (option: LangOption) => {
+    setSelectedLanguage(option);
+    setLang(option.value);
+  };
+
   const businessInfoText = isHe
     ? `מעולה! בתחום ה${businessType} — נתאים לך תוכן שיווקי מדויק, תמונות מוצר מרהיבות, וניסוחים שמדברים בשפה של הלקוחות שלך.`
     : `Awesome! In the ${businessType} space — we'll tailor marketing content, stunning product photos, and copy that speaks your customers' language.`;
@@ -102,7 +140,8 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-background px-5"
+      className="fixed inset-0 z-[100] flex items-center justify-center px-5"
+      style={{ backgroundColor: "#FCFAF7" }}
       dir={isHe ? "rtl" : "ltr"}
     >
       <div className="w-full max-w-md">
@@ -123,33 +162,69 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
             </div>
 
             <h1 className="text-4xl font-bold mb-3" style={{ color: NAVY, fontFamily: "'Playfair Display', serif" }}>
-              {isHe ? "היי! איזה כיף שהגעת" : "Hey! So glad you're here"}
+              {isHe ? "חווה את עתיד העסק שלך." : "Experience the future of your business."}
             </h1>
-            <p className="text-lg font-semibold mb-2" style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}>
-              {isHe ? "עוד רגע מתחילים" : "We're about to begin"}
-            </p>
-            <p className="text-sm text-muted-foreground mb-10 leading-relaxed max-w-xs mx-auto" style={{fontFamily: "'Montserrat', sans-serif"}}>
+            <p className="text-lg font-semibold mb-10" style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}>
               {isHe
-                ? "רק 3 שאלות קצרות שיעזרו לנו להתאים לך חוויה מדויקת לעסק שלך."
-                : "Just 3 quick questions to tailor the perfect experience for your business."}
+                ? "הכנו 4 שאלות קצרות כדי להתאים חוויה בלעדית, פרימיום ומותאמת למותג שלך. זה לוקח רק רגע."
+                : "We have prepared 4 brief questions to tailor a bespoke, premium, and exclusive experience for your brand. It only takes a moment."}
             </p>
 
             <button
-              onClick={() => setStep("business")}
+              onClick={() => setStep("language")}
               className="w-full py-4 rounded-2xl font-bold text-lg gradient-glow text-white glow-shadow hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
               style={{fontFamily: "'Montserrat', sans-serif"}}
             >
               <Sparkles size={18} />
-              {isHe ? "מוכנים? בואו נתחיל" : "Ready? Let's go!"}
+              {isHe ? "התחל את המסע שלך" : "Begin Your Journey"}
             </button>
           </div>
         )}
 
-        {/* ─── Screen 2: Business Type ─── */}
+        {/* ─── Screen 2: Language Selection ─── */}
+        {step === "language" && (
+          <div className="animate-fade-in">
+            <StepHeader
+              num={1} total={4}
+              title={isHe ? "בחר שפה לחוויה הפרימיום שלך" : "Choose the language for your premium experience"}
+            />
+            <div className="grid grid-cols-2 gap-2.5 mb-7">
+              {languageOptions.map((option) => {
+                const selected = selectedLanguage?.value === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => handleLanguageSelect(option)}
+                    className="flex items-center justify-center py-4 px-3 rounded-2xl border-2 transition-all text-center"
+                    style={{
+                      background:   selected ? NAVY      : "hsl(0 0% 100%)",
+                      borderColor:  selected ? NAVY      : "hsl(220 16% 90%)",
+                      color:        selected ? "#fff"    : NAVY,
+                      boxShadow:    selected ? `0 4px 16px -4px ${NAVY}44` : "none",
+                      fontFamily: "'Montserrat', sans-serif",
+                    }}
+                  >
+                    <span className="text-sm font-semibold leading-tight">{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => selectedLanguage && setStep("business")}
+              disabled={!selectedLanguage}
+              className="w-full py-3.5 rounded-2xl font-bold gradient-glow text-white glow-shadow hover:scale-[1.02] transition-all disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {isHe ? "המשך" : "Continue"}
+            </button>
+          </div>
+        )}
+
+        {/* ─── Screen 3: Business Type ─── */}
         {step === "business" && (
           <div className="animate-fade-in">
             <StepHeader
-              num={1} total={3}
+              num={2} total={4}
               title={isHe ? "מה סוג העסק שלך?" : "What type of business do you have?"}
             />
             <div className="grid grid-cols-3 gap-2.5 mb-7">
@@ -213,7 +288,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         {step === "audience" && (
           <div className="animate-fade-in">
             <StepHeader
-              num={2} total={3}
+              num={3} total={4}
               title={isHe ? "למי העסק פונה?" : "Who's your audience?"}
             />
             <div className="grid grid-cols-2 gap-2.5 mb-7">
@@ -283,7 +358,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         {step === "goal" && (
           <div className="animate-fade-in">
             <StepHeader
-              num={3} total={3}
+              num={4} total={4}
               title={isHe ? "מה המטרה שלך כרגע?" : "What's your current goal?"}
             />
             <div className="grid grid-cols-2 gap-2.5 mb-7">

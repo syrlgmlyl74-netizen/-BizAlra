@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import nodemailer from "nodemailer";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,6 +12,51 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+
+const CONTACT_EMAIL = "sg0549616580@gmail.com";
+const SMTP_HOST = process.env.SMTP_HOST;
+const SMTP_PORT = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
+
+const transporter = SMTP_HOST && SMTP_USER && SMTP_PASS
+  ? nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
+      auth: {
+        user: SMTP_USER,
+        pass: SMTP_PASS,
+      },
+    })
+  : null;
+
+app.post("/api/contact", async (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: "Missing contact fields" });
+  }
+
+  if (!transporter) {
+    return res.status(501).json({ error: "SMTP_NOT_CONFIGURED" });
+  }
+
+  try {
+    await transporter.sendMail({
+      from: `BizAIra Support <${SMTP_USER}>`,
+      to: CONTACT_EMAIL,
+      subject: `BizAIra Contact Form: ${name}`,
+      text: `Contact request from BizAIra:\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+      html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Message:</strong></p><p>${message.replace(/\n/g, "<br />")}</p>`,
+    });
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Contact email failed:", error);
+    return res.status(500).json({ error: "CONTACT_SEND_FAILED" });
+  }
+});
 
 // ═══════════════════════════════════════════════════════════════════
 // INTERNAL TEMPLATE ENGINE - NO EXTERNAL API CALLS

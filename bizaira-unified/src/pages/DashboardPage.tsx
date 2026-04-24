@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
-  Wand2, CreditCard, HeadphonesIcon, Calendar, TrendingUp,
-  Sparkles, Download, PenTool,
+  Wand2, CreditCard, HeadphonesIcon, Calendar,
+  Download, PenTool,
   Archive, MessageSquare, BarChart3, DollarSign, Clock, Camera,
   Trash2, Copy, Check, ChevronRight, ChevronLeft,
 } from "lucide-react";
@@ -49,6 +49,11 @@ const DashboardPage = () => {
   const [creations, setCreations]           = useState<Creation[]>([]);
   const [activeTab, setActiveTab]           = useState<"overview" | "archive">("overview");
   const [copiedId, setCopiedId]             = useState<string | null>(null);
+
+  const usageLimit   = 5;
+  const usageUsed    = profile?.credits_used ?? creationsCount;
+  const usageRemaining = Math.max(0, usageLimit - usageUsed);
+  const usagePct     = Math.round((Math.min(usageUsed, usageLimit) / usageLimit) * 100);
 
   const refreshData = useCallback(() => {
     const s1 = localStorage.getItem(STORAGE_KEYS.firstUseDate);
@@ -142,11 +147,6 @@ const DashboardPage = () => {
                 {isHe ? "הנה סקירה של הפעילות והיצירות שלך" : "Here's an overview of your activity and creations"}
               </p>
             </div>
-            <div className="hidden md:block">
-              <div className="w-24 h-24 luxury-glass rounded-2xl flex items-center justify-center">
-                <Sparkles size={32} className="text-luxury-navy" />
-              </div>
-            </div>
           </div>
         </div>
 
@@ -162,7 +162,7 @@ const DashboardPage = () => {
                 onClick={() => setActiveTab(tab.key as "overview" | "archive")}
                 className={`flex-1 py-3 px-6 luxury-transition rounded-lg luxury-body-small font-medium ${
                   activeTab === tab.key
-                    ? "luxury-gold-accent text-white shadow-lg"
+                    ? "bg-white text-luxury-black shadow-lg"
                     : "text-luxury-gray-600 hover:text-luxury-black hover:bg-luxury-gray-100"
                 }`}
               >
@@ -180,18 +180,13 @@ const DashboardPage = () => {
           <div className="luxury-card rounded-xl p-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 luxury-glass rounded-lg flex items-center justify-center">
-                    <Sparkles size={20} className="text-luxury-navy" />
-                  </div>
-                  <div>
-                    <p className="luxury-caption text-luxury-gray-500 mb-1">
-                      {t("dash.plan")}
-                    </p>
-                    <p className="luxury-body font-semibold text-luxury-black">
-                      Free Plan
-                    </p>
-                  </div>
+<div className="mb-4">
+              <p className="luxury-caption text-luxury-gray-500 mb-1">
+                {t("dash.plan")}
+              </p>
+              <p className="luxury-body font-semibold text-luxury-black">
+                Free Plan
+              </p>
                 </div>
 
                 <div className="space-y-4">
@@ -199,14 +194,18 @@ const DashboardPage = () => {
                     <span className="luxury-body-small text-luxury-gray-600">{t("dash.credits")}</span>
                     <span className="luxury-body font-semibold text-luxury-black">{creditsLeft} / {creditsTotal}</span>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="luxury-body-small text-luxury-gray-600">{isHe ? "שימושים" : "Uses"}</span>
+                    <span className="luxury-body font-semibold text-luxury-black">{usageUsed} / {usageLimit}</span>
+                  </div>
                   <div className="h-2 bg-luxury-gray-200 rounded-full overflow-hidden">
                     <div
                       className="h-full luxury-gold-accent rounded-full luxury-transition"
-                      style={{ width: `${creditPct}%` }}
+                      style={{ width: `${usagePct}%` }}
                     />
                   </div>
                   <p className="luxury-caption text-luxury-gray-500">
-                    {creditPct}% {isHe ? "קרדיטים נותרים" : "credits remaining"}
+                    {usageRemaining === 0 ? (isHe ? "הגעת למגבלת השימוש" : "You have reached the usage limit") : `${usageRemaining} ${isHe ? "שימושים נותרו" : "uses remaining"}`}
                   </p>
                 </div>
               </div>
@@ -239,23 +238,18 @@ const DashboardPage = () => {
 
           {/* Activity stats */}
           <div className="luxury-card rounded-xl p-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 luxury-glass rounded-lg flex items-center justify-center">
-                <TrendingUp size={20} className="text-luxury-navy" />
-              </div>
-              <div>
-                <h3 className="luxury-heading-3 text-luxury-black">{t("dash.activity")}</h3>
-                <p className="luxury-body-small text-luxury-gray-500 mt-1">
-                  {isHe ? "הפעילות שלך החודש" : "Your activity this month"}
-                </p>
-              </div>
+            <div className="mb-6">
+              <h3 className="luxury-heading-3 text-luxury-black">{t("dash.activity")}</h3>
+              <p className="luxury-body-small text-luxury-gray-500 mt-1">
+                {isHe ? "הפעילות שלך החודש" : "Your activity this month"}
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { icon: PenTool,  label: t("dash.creations"), val: creationsCount, desc: isHe ? "יצירות שנוצרו" : "creations made" },
-                { icon: Download, label: t("dash.downloads"),  val: downloadsCount, desc: isHe ? "הורדות" : "downloads" },
-                { icon: Archive,  label: isHe ? "בארכיון" : "In archive", val: creations.length, desc: isHe ? "שמורות" : "saved" },
+                { icon: PenTool,  label: t("dash.creations"), val: creationsCount, desc: "" },
+                { icon: Download, label: t("dash.downloads"),  val: downloadsCount, desc: "" },
+                { icon: Archive,  label: isHe ? "בארכיון" : "In archive", val: creations.length, desc: "" },
               ].map(({ icon: Icon, label, val, desc }) => (
                 <div key={label} className="text-center p-4 luxury-glass rounded-lg">
                   <div className="w-12 h-12 mx-auto mb-3 luxury-glass rounded-lg flex items-center justify-center">
@@ -263,7 +257,7 @@ const DashboardPage = () => {
                   </div>
                   <div className="text-2xl font-bold text-luxury-black mb-1">{val}</div>
                   <div className="luxury-body-small text-luxury-gray-600">{label}</div>
-                  <div className="luxury-caption text-luxury-gray-500 mt-1">{desc}</div>
+                  {desc && <div className="luxury-caption text-luxury-gray-500 mt-1">{desc}</div>}
                 </div>
               ))}
             </div>
@@ -374,7 +368,7 @@ const DashboardPage = () => {
             <>
               <div className="mb-6">
                 <p className="luxury-body-small text-luxury-gray-500">
-                  {isHe ? `${creations.length} יצירות שמורות` : `${creations.length} saved creations`}
+                  {isHe ? `${creations.length} יצירות בארכיון` : `${creations.length} saved creations`}
                 </p>
               </div>
               <div className="space-y-4">
