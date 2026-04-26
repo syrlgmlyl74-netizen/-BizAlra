@@ -8,6 +8,7 @@ const BottomNav = () => {
   const navItems = [
     { to: "/", icon: Home, label: t("nav.home") },
     { to: "/create", icon: Wand2, label: t("nav.create") },
+    { to: "/dashboard", icon: User, label: t("nav.dashboard") },
     { to: "/support", icon: HelpCircle, label: t("nav.support") },
   ];
 

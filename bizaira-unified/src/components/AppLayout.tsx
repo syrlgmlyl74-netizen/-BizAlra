@@ -3,7 +3,7 @@ import BottomNav from "./BottomNav";
 import CookieSettings from "./CookieSettings";
 import { LanguageToggle } from "@/lib/i18n";
 import { Link } from "react-router-dom";
-import { Menu, X, Home, Wand2, HelpCircle } from "lucide-react";
+import { Menu, X, Home, Wand2, HelpCircle, User } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -23,6 +23,7 @@ const Layout = ({ children }: LayoutProps) => {
   const navItems = [
     { to: "/", icon: Home, label: t("nav.home") },
     { to: "/create", icon: Wand2, label: t("nav.create") },
+    { to: "/dashboard", icon: User, label: t("nav.dashboard") },
     { to: "/support", icon: HelpCircle, label: t("nav.support") },
   ];
 

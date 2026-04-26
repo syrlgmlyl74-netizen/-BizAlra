@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
-  Wand2, CreditCard, HeadphonesIcon, Calendar,
-  Download, PenTool,
+  Wand2, CreditCard, HeadphonesIcon, Calendar, TrendingUp,
+  Sparkles, Download, PenTool,
   Archive, MessageSquare, BarChart3, DollarSign, Clock, Camera,
   Trash2, Copy, Check, ChevronRight, ChevronLeft,
 } from "lucide-react";
@@ -146,6 +146,11 @@ const DashboardPage = () => {
               <p className="luxury-body mt-3 text-luxury-gray-600 max-w-md">
                 {isHe ? "הנה סקירה של הפעילות והיצירות שלך" : "Here's an overview of your activity and creations"}
               </p>
+            </div>
+            <div className="hidden md:block">
+              <div className="w-24 h-24 luxury-glass rounded-2xl flex items-center justify-center">
+                <Sparkles size={32} className="text-luxury-navy" />
+              </div>
             </div>
           </div>
         </div>
