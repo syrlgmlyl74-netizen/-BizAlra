@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,20 +19,18 @@ type Step = "greeting" | "language" | "business" | "audience" | "tone" | "goal" 
 
 type LangOption = {
   label: string;
-  value: "en" | "he" | "es" | "fr" | "ar" | "ru";
+  value: "en" | "he";
   Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
 };
 
-const PURPLE = "#0D2344";
-const NAVY   = "#0D2344";
+const NAVY = "#050A14";
+const OFF_WHITE = "#F5F5F0";
+const SURFACE = "#FCFAF7";
+const BORDER = "#D8D2C4";
 
 const languageOptions: LangOption[] = [
   { label: "English", value: "en", Icon: Globe },
   { label: "עברית", value: "he", Icon: Globe },
-  { label: "Español", value: "es", Icon: Globe },
-  { label: "Français", value: "fr", Icon: Globe },
-  { label: "العربية", value: "ar", Icon: Globe },
-  { label: "Русский", value: "ru", Icon: Globe },
 ];
 
 const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
@@ -130,6 +128,13 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
     setLang(option.value);
   };
 
+  useEffect(() => {
+    const currentSelection = languageOptions.find((option) => option.value === lang) ?? null;
+    if (currentSelection?.value !== selectedLanguage?.value) {
+      setSelectedLanguage(currentSelection);
+    }
+  }, [lang]);
+
   const businessInfoText = isHe
     ? `מעולה! בתחום ה${businessType} — נתאים לך תוכן שיווקי מדויק, תמונות מוצר מרהיבות, וניסוחים שמדברים בשפה של הלקוחות שלך.`
     : `Awesome! In the ${businessType} space — we'll tailor marketing content, stunning product photos, and copy that speaks your customers' language.`;
@@ -140,11 +145,15 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center px-5"
-      style={{ backgroundColor: "#FCFAF7" }}
+      className="fixed inset-0 z-[100] flex items-center justify-center px-5 premium-grid"
+      style={{
+        backgroundColor: OFF_WHITE,
+        backgroundImage: "radial-gradient(circle at top right, rgba(5,10,20,0.03) 1px, transparent 1px), radial-gradient(circle at bottom left, rgba(5,10,20,0.02) 1px, transparent 1px)",
+        backgroundSize: "72px 72px, 96px 96px",
+      }}
       dir={isHe ? "rtl" : "ltr"}
     >
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-lg rounded-[10px] border border-[#D8D2C4] bg-white/90 p-6 shadow-[0_32px_80px_-40px_rgba(5,10,20,0.42)]">
 
         {/* ─── Screen 1: Greeting ─── */}
         {step === "greeting" && (
@@ -152,7 +161,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
             <div className="relative mx-auto mb-8 w-20 h-20">
               <div
                 className="absolute -inset-4 rounded-full blur-2xl opacity-20 animate-pulse"
-                style={{ background: `linear-gradient(135deg, ${PURPLE}, ${NAVY})` }}
+                style={{ background: `radial-gradient(circle, ${NAVY} 0%, rgba(5,10,20,0.08) 60%)` }}
               />
               <img
                 src="/images/bizaira-illustration.png"
@@ -186,25 +195,29 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <StepHeader
               num={1} total={4}
-              title="?Which language do you want / באיזו שפה תרצה להשתמש"
+              title={isHe ? "באיזו שפה תרצה להשתמש?" : "Which language would you like to use?"}
             />
-            <div className="grid grid-cols-2 gap-2.5 mb-7">
+            <div className="grid grid-cols-2 gap-4 mb-7">
               {languageOptions.map((option) => {
                 const selected = selectedLanguage?.value === option.value;
                 return (
                   <button
                     key={option.value}
                     onClick={() => handleLanguageSelect(option)}
-                    className="flex items-center justify-center py-4 px-3 rounded-2xl border-2 transition-all text-center"
+                    className="flex items-center justify-center rounded-[6px] border transition-all text-center"
                     style={{
-                      background:   selected ? NAVY      : "hsl(0 0% 100%)",
-                      borderColor:  selected ? NAVY      : "hsl(220 16% 90%)",
-                      color:        selected ? "#fff"    : NAVY,
-                      boxShadow:    selected ? `0 4px 16px -4px ${NAVY}44` : "none",
+                      minHeight: 100,
+                      padding: "1rem 1.1rem",
+                      background: selected ? NAVY : SURFACE,
+                      borderColor: selected ? NAVY : BORDER,
+                      color: selected ? OFF_WHITE : NAVY,
+                      boxShadow: selected ? `0 16px 40px -28px ${NAVY}` : "none",
                       fontFamily: "'Montserrat', sans-serif",
+                      fontWeight: 600,
+                      letterSpacing: "0.03em",
                     }}
                   >
-                    <span className="text-sm font-semibold leading-tight">{option.label}</span>
+                    <span className="text-base leading-tight">{option.label}</span>
                   </button>
                 );
               })}
@@ -213,7 +226,16 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
             <button
               onClick={() => selectedLanguage && setStep("business")}
               disabled={!selectedLanguage}
-              className="w-full py-3.5 rounded-2xl font-bold gradient-glow text-white glow-shadow hover:scale-[1.02] transition-all disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full rounded-[6px] font-semibold text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                minHeight: 56,
+                background: selectedLanguage ? NAVY : "#9A9A9A",
+                color: OFF_WHITE,
+                border: "1px solid transparent",
+                letterSpacing: "0.02em",
+                boxShadow: selectedLanguage ? "0 12px 30px -20px rgba(5,10,20,0.4)" : "none",
+                fontFamily: "'Montserrat', sans-serif",
+              }}
             >
               {isHe ? "המשך" : "Continue"}
             </button>
@@ -266,7 +288,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         {step === "business-info" && (
           <div className="animate-fade-in text-center">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "hsl(216 50% 94%)" }}>
-              <Check size={24} style={{ color: PURPLE }} />
+              <Check size={24} style={{ color: NAVY }} />
             </div>
             <h2 className="text-3xl font-bold mb-3" style={{ color: NAVY, fontFamily: "'Playfair Display', serif" }}>
               {isHe ? "נהדר, הבנו!" : "Got it!"}
@@ -336,7 +358,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         {step === "audience-info" && (
           <div className="animate-fade-in text-center">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "hsl(216 50% 94%)" }}>
-              <Check size={24} style={{ color: PURPLE }} />
+              <Check size={24} style={{ color: NAVY }} />
             </div>
             <h2 className="text-2xl font-black mb-3" style={{ color: NAVY }}>
               {isHe ? "מעולה!" : "Excellent!"}
@@ -370,10 +392,10 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                     onClick={() => setGoal(label)}
                     className="flex items-center gap-3 py-3.5 px-4 rounded-2xl border-2 transition-all text-start"
                     style={{
-                      background:  selected ? PURPLE  : "hsl(0 0% 100%)",
-                      borderColor: selected ? PURPLE  : "hsl(220 16% 90%)",
+                      background:  selected ? NAVY  : "hsl(0 0% 100%)",
+                      borderColor: selected ? NAVY  : "hsl(220 16% 90%)",
                       color:       selected ? "#fff"  : NAVY,
-                      boxShadow:   selected ? `0 4px 16px -4px ${PURPLE}55` : "none",
+                      boxShadow:   selected ? `0 4px 16px -4px ${NAVY}55` : "none",
                     }}
                   >
                     <Icon size={16} strokeWidth={1.5} />
@@ -407,7 +429,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in text-center">
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 glow-shadow"
-              style={{ background: `linear-gradient(135deg, ${PURPLE}, hsl(216 68% 14%))` }}
+              style={{ background: `linear-gradient(135deg, ${NAVY}, hsl(216 68% 14%))` }}
             >
               <Check size={28} className="text-white" strokeWidth={2.5} />
             </div>

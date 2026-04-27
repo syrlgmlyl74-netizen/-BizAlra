@@ -57,27 +57,27 @@
   --radius-xl: 16px;
 
   /* ── Base ── */
-  --background:    36 33% 98%;
-  --foreground:    222 47% 8%;
+  --background:    42 18% 96%;
+  --foreground:    224 90% 5%;
 
   /* ── Cards / Surfaces ── */
-  --card:             0 0% 100%;
-  --card-foreground:  222 47% 8%;
-  --popover:          0 0% 100%;
-  --popover-foreground: 222 47% 8%;
+  --card:             42 22% 98%;
+  --card-foreground:  224 90% 5%;
+  --popover:          42 22% 98%;
+  --popover-foreground: 224 90% 5%;
 
-  /* ── Primary = Deep Navy #020817 ── */
-  --primary:            216 91% 4.5%;
+  /* ── Primary = Midnight Blue / Almost Black ── */
+  --primary:            224 90% 5%;
   --primary-foreground: 0 0% 100%;
 
   /* ── Secondary / Muted ── */
-  --secondary:             220 20% 96%;
-  --secondary-foreground:  216 84% 5%;
-  --muted:                 220 18% 97%;
-  --muted-foreground:      220 12% 45%;
+  --secondary:             42 20% 95%;
+  --secondary-foreground:  224 90% 11%;
+  --muted:                 42 22% 96%;
+  --muted-foreground:      224 55% 18%;
 
-  /* ── Accent = Navy Blue #0D2344 ── */
-  --accent:            216 68% 12%;
+  /* ── Accent = Midnight Blue ── */
+  --accent:            224 90% 5%;
   --accent-foreground: 0 0% 100%;
 
   /* ── Destructive ── */
@@ -85,9 +85,9 @@
   --destructive-foreground: 0 0% 100%;
 
   /* ── Borders / Inputs ── */
-  --border: 217 20% 92%;
-  --input:  217 20% 94%;
-  --ring:   216 68% 12%;
+  --border: 38 12% 85%;
+  --input:  38 12% 88%;
+  --ring:   224 90% 5%;
 
   /* ── Deep Navy for Premium Text ── */
   --deep-navy: 216 95% 7%;
@@ -159,6 +159,12 @@
 .luxury-card:hover {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
+}
+
+.premium-grid {
+  background-image: radial-gradient(circle at top right, rgba(5, 10, 20, 0.03) 1px, transparent 1px),
+                    radial-gradient(circle at bottom left, rgba(5, 10, 20, 0.02) 1px, transparent 1px);
+  background-size: 72px 72px, 96px 96px;
 }
 
 .luxury-gradient {

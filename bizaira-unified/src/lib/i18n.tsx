@@ -474,9 +474,16 @@ const I18nContext = createContext<I18nContextType>({
 });
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLang] = useState<Lang>("he");
+  const [lang, setLang] = useState<Lang>(() => {
+    if (typeof window === "undefined") return "he";
+    const stored = window.localStorage.getItem("bizaira_language");
+    return stored === "en" || stored === "he" ? stored : "he";
+  });
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("bizaira_language", lang);
+    }
     document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
     document.documentElement.lang = lang;
   }, [lang]);
