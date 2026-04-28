@@ -21,6 +21,7 @@ import ImageStudioPage from "./pages/ImageStudioPage";
 import AuthPage from "./pages/AuthPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import DashboardPage from "./pages/DashboardPage";
+import ProfilePage from "./pages/ProfilePage";
 import PricingPage from "./pages/PricingPage";
 import SupportPage from "./pages/SupportPage";
 import VideoStudioPage from "./pages/VideoStudioPage";
@@ -108,6 +109,7 @@ const App = () => {
                 <Route path="/create/image-studio" element={<AppLayout><ImageStudioPage /></AppLayout>} />
                 <Route path="/create/video" element={<AppLayout><VideoStudioPage /></AppLayout>} />
                 <Route path="/dashboard" element={<AppLayout><DashboardPage /></AppLayout>} />
+                <Route path="/profile" element={<AppLayout><ProfilePage /></AppLayout>} />
                 <Route path="/pricing" element={<AppLayout><PricingPage /></AppLayout>} />
                 <Route path="/support" element={<AppLayout><SupportPage /></AppLayout>} />
               <Route path="/accessibility" element={<AppLayout><AccessibilityStatement /></AppLayout>} />

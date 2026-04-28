@@ -1,3 +1,27 @@
+// Retry utility for API calls
+async function retryApiCall<T>(
+  apiCall: () => Promise<T>,
+  maxRetries: number = 3,
+  delay: number = 1000
+): Promise<T> {
+  let lastError: Error;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await apiCall();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.warn(`API call failed (attempt ${attempt}/${maxRetries}):`, lastError.message);
+
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, delay * attempt));
+      }
+    }
+  }
+
+  throw lastError!;
+}
+
 export async function generateImage(prompt: string, editImage?: string): Promise<string> {
   try {
     const response = await fetch("/api/generate-image", {
@@ -102,7 +126,7 @@ export interface GenerateAnalyticsPayload {
 }
 
 export async function generateAnalytics(payload: GenerateAnalyticsPayload): Promise<string> {
-  try {
+  return retryApiCall(async () => {
     const response = await fetch("/api/generate-analytics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -116,9 +140,7 @@ export async function generateAnalytics(payload: GenerateAnalyticsPayload): Prom
     }
     if (!data?.text) throw new Error("No analytics text returned");
     return data.text;
-  } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Network error generating analytics");
-  }
+  });
 }
 
 export interface GenerateTimePlanPayload {
@@ -129,7 +151,7 @@ export interface GenerateTimePlanPayload {
 }
 
 export async function generateTimePlan(payload: GenerateTimePlanPayload): Promise<string> {
-  try {
+  return retryApiCall(async () => {
     const response = await fetch("/api/generate-time", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -143,9 +165,7 @@ export async function generateTimePlan(payload: GenerateTimePlanPayload): Promis
     }
     if (!data?.text) throw new Error("No time plan text returned");
     return data.text;
-  } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Network error generating time plan");
-  }
+  });
 }
 
 export interface GeneratePricingPayload {

@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import SparkleIcon from "@/components/SparkleIcon";
 import {
   ArrowRight, ArrowLeft, Sparkles, Upload, X, Download, RefreshCw,
   Copy, Check, ChevronRight, ChevronLeft,
@@ -69,18 +68,18 @@ const AIWizard = ({ config, onGenerate, mockResult, mockDelay = 2500 }: Props) =
         if (res) {
           setResult(res);
         } else {
-          setResult(mockResult || "✨ התוצאה שלך מוכנה!");
+          setResult(mockResult || (isHe ? "התוצאה שלך מוכנה!" : "Your result is ready!"));
         }
       } else {
         // Fallback to mock
         await new Promise(r => setTimeout(r, mockDelay));
-        setResult(mockResult || "✨ התוצאה שלך מוכנה!");
+        setResult(mockResult || (isHe ? "התוצאה שלך מוכנה!" : "Your result is ready!"));
       }
     } catch (err: any) {
       console.error("Generation error:", err);
       setError(err.message || "שגיאה ביצירה");
       // Fallback to mock on error
-      setResult(mockResult || "✨ התוצאה שלך מוכנה!");
+      setResult(mockResult || (isHe ? "התוצאה שלך מוכנה!" : "Your result is ready!"));
     } finally {
       setIsGenerating(false);
     }
@@ -444,7 +443,6 @@ function Header({ title, subtitle, backRoute }: { title: string; subtitle: strin
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           </div>
         </div>
-        <SparkleIcon size={18} />
       </div>
     </div>
   );

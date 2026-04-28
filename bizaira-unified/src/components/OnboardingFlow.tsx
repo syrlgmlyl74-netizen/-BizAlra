@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { safeSetItem } from "@/lib/safe-storage";
+import { safeSetItem, safeSetSessionItem } from "@/lib/safe-storage";
 import { toast } from "sonner";
 import {
   Sparkles, ArrowLeft, Check,
@@ -466,8 +466,8 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                     return;
                   }
                 } else {
-                  // Store in localStorage for later
-                  safeSetItem("bizaira_onboarding", JSON.stringify(onboardingData));
+                  // Store in sessionStorage for guests (temporary, cleared on browser close)
+                  safeSetSessionItem("bizaira_onboarding", JSON.stringify(onboardingData));
                 }
 
                 onComplete();

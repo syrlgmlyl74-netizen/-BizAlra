@@ -1,66 +1,49 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
-  Wand2, CreditCard, HeadphonesIcon, Calendar, TrendingUp,
-  Sparkles, Download, PenTool,
-  Archive, MessageSquare, BarChart3, DollarSign, Clock, Camera,
-  Trash2, Copy, Check, ChevronRight, ChevronLeft,
+  Wand2,
+  CreditCard,
+  HeadphonesIcon,
+  TrendingUp,
+  Sparkles,
+  Download,
+  Copy,
+  Check,
+  User,
+  MessageSquare,
+  BarChart3,
+  DollarSign,
+  Clock,
+  Camera,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  loadCreations, deleteCreation, trackDownload,
-  type Creation, type CreationType,
+  loadCreations,
+  trackDownload,
+  type Creation,
+  type CreationType,
 } from "@/lib/creations-store";
-import { getActivityStats } from "@/lib/activity-tracker";
-
-const NAVY         = "hsl(var(--luxury-navy))";
-const PURPLE       = "hsl(var(--luxury-navy))";
-const PURPLE_LIGHT = "hsl(var(--luxury-gray-100))";
 
 const TYPE_ICON: Record<CreationType, React.ComponentType<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>> = {
-  message:   MessageSquare,
+  message: MessageSquare,
   analytics: BarChart3,
-  pricing:   DollarSign,
-  time:      Clock,
-  image:     Camera,
-  photo:     Camera,
-};
-
-const STORAGE_KEYS = {
-  firstUseDate:    "bizaira_first_credit_use",
-  creationsCount:  "bizaira_creations_count",
-  downloadsCount:  "bizaira_downloads_count",
+  pricing: DollarSign,
+  time: Clock,
+  image: Camera,
+  photo: Camera,
 };
 
 const DashboardPage = () => {
   const { t, lang } = useI18n();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const isHe = lang === "he";
+  const userName = user?.user_metadata?.full_name || (isHe ? "אורח" : "Guest");
 
-  const userName    = user?.user_metadata?.full_name || (isHe ? "אורח" : "Guest");
-  const creditsUsed = profile?.credits_used ?? 0;
-  const creditsTotal = profile?.credits_total ?? 5;
-  const creditsLeft  = creditsTotal - creditsUsed;
-  const creditPct    = creditsTotal > 0 ? Math.round((creditsLeft / creditsTotal) * 100) : 0;
-
-  const [firstUseDate, setFirstUseDate]     = useState<string | null>(null);
-  const [creationsCount, setCreationsCount] = useState(0);
-  const [downloadsCount, setDownloadsCount] = useState(0);
-  const [creations, setCreations]           = useState<Creation[]>([]);
-  const [activeTab, setActiveTab]           = useState<"overview" | "archive">("overview");
-  const [copiedId, setCopiedId]             = useState<string | null>(null);
-
-  const usageLimit   = 5;
-  const usageUsed    = profile?.credits_used ?? creationsCount;
-  const usageRemaining = Math.max(0, usageLimit - usageUsed);
-  const usagePct     = Math.round((Math.min(usageUsed, usageLimit) / usageLimit) * 100);
+  const [creations, setCreations] = useState<Creation[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const refreshData = useCallback(() => {
-    const stats = getActivityStats();
-    setFirstUseDate(stats.firstUseDate);
-    setCreationsCount(stats.creationsCount);
-    setDownloadsCount(stats.downloadsCount);
     setCreations(loadCreations());
   }, []);
 
@@ -70,373 +53,184 @@ const DashboardPage = () => {
     return () => window.removeEventListener("storage", refreshData);
   }, [refreshData]);
 
-  const getNextRenewalDate = () => {
-    if (!firstUseDate) return isHe ? "טרם נעשה שימוש" : "No usage yet";
-    const next = new Date(firstUseDate);
-    next.setMonth(next.getMonth() + 1);
-    return next.toLocaleDateString(isHe ? "he-IL" : "en-US");
-  };
-
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString(isHe ? "he-IL" : "en-US", { day: "numeric", month: "short" });
 
-  const formatFirstUseDate = () =>
-    firstUseDate
-      ? new Date(firstUseDate).toLocaleDateString(isHe ? "he-IL" : "en-US")
-      : (isHe ? "טרם נעשה שימוש" : "No usage yet");
-
-  const Arrow = isHe ? ChevronLeft : ChevronRight;
-
-  const handleCopyCreation = (c: Creation) => {
-    navigator.clipboard.writeText(c.content);
-    setCopiedId(c.id);
-    setTimeout(() => setCopiedId(null), 2000);
+  const handleCopyCreation = (creation: Creation) => {
+    navigator.clipboard.writeText(creation.content);
+    setCopiedId(creation.id);
+    window.setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleDownloadCreation = (c: Creation) => {
-    const blob = new Blob([c.content], { type: "text/plain;charset=utf-8" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
+  const handleDownloadCreation = (creation: Creation) => {
+    const blob = new Blob([creation.content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `bizaira-${c.type}-${c.id.slice(0, 6)}.txt`;
+    a.download = `bizaira-${creation.type}-${creation.id.slice(0, 6)}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     trackDownload();
     refreshData();
   };
 
-  const handleDeleteCreation = (id: string) => {
-    deleteCreation(id);
-    refreshData();
-  };
-
-  const quickActions = [
-    { to: "/create",   icon: Wand2,          label: t("dash.startCreate")   },
-    { to: "/pricing",  icon: CreditCard,      label: t("dash.manageSub")     },
-    { to: "/support",  icon: HeadphonesIcon,  label: t("dash.supportTitle")  },
-  ];
-
   const typeLabel = (type: CreationType) => {
     const labels: Record<CreationType, { he: string; en: string }> = {
-      message:   { he: "הודעה",         en: "Message"   },
-      analytics: { he: "ניתוח עסקי",   en: "Analytics" },
-      pricing:   { he: "תמחור",         en: "Pricing"   },
-      time:      { he: "ניהול זמן",     en: "Time"      },
-      image:     { he: "תמונה",         en: "Image"     },
-      photo:     { he: "סטודיו",        en: "Photo"     },
+      message: { he: "הודעה", en: "Message" },
+      analytics: { he: "ניתוח עסקי", en: "Analytics" },
+      pricing: { he: "תמחור", en: "Pricing" },
+      time: { he: "ניהול זמן", en: "Time" },
+      image: { he: "תמונה", en: "Image" },
+      photo: { he: "סטודיו", en: "Photo" },
     };
     return isHe ? labels[type].he : labels[type].en;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-luxury-gray-50 to-luxury-white pb-12" dir={isHe ? "rtl" : "ltr"}>
-      <div className="max-w-4xl mx-auto px-6 pt-12">
-
-        {/* Header */}
-        <div className="mb-16 animate-fade-in">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <p className="luxury-caption mb-2 text-luxury-gray-500">
-                {isHe ? "שלום," : "Welcome back,"}
-              </p>
-              <h1 className="luxury-heading-1 text-luxury-black">
-                {userName}
-              </h1>
-              <p className="luxury-body mt-3 text-luxury-gray-600 max-w-md">
-                {isHe ? "הנה סקירה של הפעילות והיצירות שלך" : "Here's an overview of your activity and creations"}
-              </p>
-            </div>
-            <div className="hidden md:block">
-              <div className="w-24 h-24 luxury-glass rounded-2xl flex items-center justify-center">
-                <Sparkles size={32} className="text-luxury-navy" />
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-luxury-navy pb-12" dir={isHe ? "rtl" : "ltr"}>
+      <div className="max-w-6xl mx-auto px-6 pt-12">
+        <div className="mb-16 animate-fade-in text-center">
+          <h1 className="luxury-heading text-4xl md:text-5xl mb-4">
+            {isHe ? `שלום ${userName}, מה תרצה לבנות היום?` : `Hello ${userName}, what would you like to build today?`}
+          </h1>
+          <p className="luxury-body text-luxury-gray-300 max-w-2xl mx-auto">
+            {isHe ? "הכלי המתקדמים שלך ליצירת תוכן עסקי מקצועי" : "Your advanced tools for creating professional business content"}
+          </p>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-12 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-          <div className="flex gap-2 p-2 luxury-glass rounded-xl max-w-md">
-            {[
-              { key: "overview", he: "סקירה כללית", en: "Overview" },
-              { key: "archive",  he: `ארכיון (${creations.length})`, en: `Archive (${creations.length})` },
-            ].map(tab => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key as "overview" | "archive")}
-                className={`flex-1 py-3 px-6 luxury-transition rounded-lg luxury-body-small font-medium ${
-                  activeTab === tab.key
-                    ? "bg-white text-luxury-black shadow-lg"
-                    : "text-luxury-gray-600 hover:text-luxury-black hover:bg-luxury-gray-100"
-                }`}
-              >
-                {isHe ? tab.he : tab.en}
-              </button>
-            ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <Link
+            to="/create"
+            className="group luxury-card rounded-2xl p-8 bg-luxury-gray-900/50 border border-luxury-gold/20 hover:border-luxury-gold/40 transition-all duration-300 hover:shadow-2xl hover:shadow-luxury-gold/10 hover:scale-[1.02]"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-xl bg-luxury-gold/10 group-hover:bg-luxury-gold/20 transition-colors">
+                <Wand2 size={24} className="text-luxury-gold" />
+              </div>
+            </div>
+            <h3 className="luxury-heading text-xl mb-2 text-luxury-cream">
+              {isHe ? "התחל ליצור" : "Start Creating"}
+            </h3>
+            <p className="luxury-description text-luxury-gray-400">
+              {isHe ? "צור תוכן עסקי מתקדם עם AI" : "Create advanced business content with AI"}
+            </p>
+          </Link>
+
+          <Link
+            to="/profile"
+            className="luxury-card rounded-2xl p-8 bg-luxury-gray-900/50 border border-luxury-gold/20 hover:border-luxury-gold/40 transition-all duration-300 hover:shadow-2xl hover:shadow-luxury-gold/10 hover:scale-[1.02]"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-xl bg-luxury-gold/10 hover:bg-luxury-gold/20 transition-colors">
+                <User size={24} className="text-luxury-gold" />
+              </div>
+            </div>
+            <h3 className="luxury-heading text-xl mb-2 text-luxury-cream">
+              {isHe ? "אזור אישי" : "Personal Area"}
+            </h3>
+            <p className="luxury-description text-luxury-gray-400">
+              {isHe ? "נהל את הפרופיל וההעדפות שלך" : "Manage your profile and preferences"}
+            </p>
+          </Link>
+
+          <div className="luxury-card rounded-2xl p-8 bg-luxury-gray-900/50 border border-luxury-gold/20 hover:border-luxury-gold/40 transition-all duration-300 hover:shadow-2xl hover:shadow-luxury-gold/10 hover:scale-[1.02] cursor-pointer">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-xl bg-luxury-gold/10 hover:bg-luxury-gold/20 transition-colors">
+                <TrendingUp size={24} className="text-luxury-gold" />
+              </div>
+            </div>
+            <h3 className="luxury-heading text-xl mb-2 text-luxury-cream">
+              {isHe ? "מעקב פעילות" : "Activity Tracker"}
+            </h3>
+            <p className="luxury-description text-luxury-gray-400">
+              {isHe ? "צפה בסטטיסטיקות השימוש שלך" : "View your usage statistics"}
+            </p>
           </div>
+
+          <Link
+            to="/pricing"
+            className="luxury-card rounded-2xl p-8 bg-luxury-gray-900/50 border border-luxury-gold/20 hover:border-luxury-gold/40 transition-all duration-300 hover:shadow-2xl hover:shadow-luxury-gold/10 hover:scale-[1.02]"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-xl bg-luxury-gold/10 group-hover:bg-luxury-gold/20 transition-colors">
+                <CreditCard size={24} className="text-luxury-gold" />
+              </div>
+            </div>
+            <h3 className="luxury-heading text-xl mb-2 text-luxury-cream">
+              {isHe ? "ניהול מנוי" : "Subscription"}
+            </h3>
+            <p className="luxury-description text-luxury-gray-400">
+              {isHe ? "נהל את התוכנית והתשלומים שלך" : "Manage your plan and payments"}
+            </p>
+          </Link>
+
+          <Link
+            to="/support"
+            className="luxury-card rounded-2xl p-8 bg-luxury-gray-900/50 border border-luxury-gold/20 hover:border-luxury-gold/40 transition-all duration-300 hover:shadow-2xl hover:shadow-luxury-gold/10 hover:scale-[1.02] md:col-span-2 lg:col-span-1"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-xl bg-luxury-gold/10 group-hover:bg-luxury-gold/20 transition-colors">
+                <HeadphonesIcon size={24} className="text-luxury-gold" />
+              </div>
+            </div>
+            <h3 className="luxury-heading text-xl mb-2 text-luxury-cream">
+              {isHe ? "תמיכה" : "Support"}
+            </h3>
+            <p className="luxury-description text-luxury-gray-400">
+              {isHe ? "קבל עזרה ותמיכה מקצועית" : "Get help and professional support"}
+            </p>
+          </Link>
         </div>
 
-      {/* ─── Overview tab ─── */}
-      {activeTab === "overview" && (
-        <div className="space-y-8">
+        <div className="luxury-card rounded-2xl p-8 bg-luxury-gray-900/30 border border-luxury-gold/10">
+          <h3 className="luxury-heading text-2xl mb-6 text-luxury-cream">
+            {isHe ? "פעילות אחרונה" : "Recent Activity"}
+          </h3>
 
-          {/* Credits card */}
-          <div className="luxury-card rounded-xl p-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex-1">
-<div className="mb-4">
-              <p className="luxury-caption text-luxury-gray-500 mb-1">
-                {t("dash.plan")}
-              </p>
-              <p className="luxury-body font-semibold text-luxury-black">
-                Free Plan
-              </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="luxury-body-small text-luxury-gray-600">{t("dash.credits")}</span>
-                    <span className="luxury-body font-semibold text-luxury-black">{creditsLeft} / {creditsTotal}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="luxury-body-small text-luxury-gray-600">{isHe ? "שימושים" : "Uses"}</span>
-                    <span className="luxury-body font-semibold text-luxury-black">{usageUsed} / {usageLimit}</span>
-                  </div>
-                  <div className="h-2 bg-luxury-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full luxury-gold-accent rounded-full luxury-transition"
-                      style={{ width: `${usagePct}%` }}
-                    />
-                  </div>
-                  <p className="luxury-caption text-luxury-gray-500">
-                    {usageRemaining === 0 ? (isHe ? "הגעת למגבלת השימוש" : "You have reached the usage limit") : `${usageRemaining} ${isHe ? "שימושים נותרו" : "uses remaining"}`}
-                  </p>
-                </div>
-              </div>
-
-              <Link
-                to="/pricing"
-                className="luxury-gold-accent text-white px-6 py-3 rounded-lg font-medium hover:shadow-xl luxury-transition luxury-hover-lift"
-              >
-                {t("dash.upgrade")}
-              </Link>
-            </div>
-
-            <div className="border-t border-luxury-gray-200 pt-6 mt-6 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="luxury-body-small text-luxury-gray-600 flex items-center gap-2">
-                  <Calendar size={14} />
-                  {isHe ? "שימוש ראשון:" : "First Use:"}
-                </span>
-                <span className="luxury-body-small font-medium text-luxury-black">{formatFirstUseDate()}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="luxury-body-small text-luxury-gray-600 flex items-center gap-2">
-                  <Calendar size={14} />
-                  {isHe ? "חידוש הבא:" : "Next Renewal:"}
-                </span>
-                <span className="luxury-body-small font-medium text-luxury-black">{getNextRenewalDate()}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Activity stats */}
-          <div className="luxury-card rounded-xl p-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            <div className="mb-6">
-              <h3 className="luxury-heading-3 text-luxury-black">{t("dash.activity")}</h3>
-              <p className="luxury-body-small text-luxury-gray-500 mt-1">
-                {isHe ? "הפעילות שלך החודש" : "Your activity this month"}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { icon: PenTool,  label: t("dash.creations"), val: creationsCount, desc: "" },
-                { icon: Download, label: t("dash.downloads"),  val: downloadsCount, desc: "" },
-                { icon: Archive,  label: isHe ? "בארכיון" : "In archive", val: creations.length, desc: "" },
-              ].map(({ icon: Icon, label, val, desc }) => (
-                <div key={label} className="text-center p-4 luxury-glass rounded-lg">
-                  <div className="w-12 h-12 mx-auto mb-3 luxury-glass rounded-lg flex items-center justify-center">
-                    <Icon size={20} className="text-luxury-navy" />
-                  </div>
-                  <div className="text-2xl font-bold text-luxury-black mb-1">{val}</div>
-                  <div className="luxury-body-small text-luxury-gray-600">{label}</div>
-                  {desc && <div className="luxury-caption text-luxury-gray-500 mt-1">{desc}</div>}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recent creations preview */}
-          {creations.length > 0 && (
-            <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="luxury-heading-3 text-luxury-black">
-                    {isHe ? "יצירות אחרונות" : "Recent Creations"}
-                  </h3>
-                  <p className="luxury-body-small text-luxury-gray-500 mt-1">
-                    {isHe ? "היצירות האחרונות שלך" : "Your latest creations"}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setActiveTab("archive")}
-                  className="luxury-body-small text-luxury-navy hover:text-luxury-gold font-medium luxury-transition"
-                >
-                  {isHe ? "צפה בהכל" : "View all"} {Arrow}
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {creations.slice(0, 3).map(c => {
-                  const IconComp = TYPE_ICON[c.type];
-                  return (
-                    <div key={c.id} className="luxury-card rounded-lg p-4 luxury-hover-lift">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="w-8 h-8 luxury-glass rounded-lg flex items-center justify-center shrink-0">
-                          <IconComp size={14} className="text-luxury-navy" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="luxury-caption text-luxury-gray-500">
-                              {typeLabel(c.type)}
-                            </span>
-                            <span className="luxury-caption text-luxury-gray-400">{formatDate(c.createdAt)}</span>
-                          </div>
-                          <p className="luxury-body-small text-luxury-black font-medium truncate">{c.title}</p>
-                        </div>
-                      </div>
-                      <p className="luxury-body-small text-luxury-gray-600 leading-relaxed line-clamp-3">
-                        {c.content}
-                      </p>
+          {creations.length > 0 ? (
+            <div className="space-y-4">
+              {creations.slice(0, 5).map((creation) => (
+                <div key={creation.id} className="flex items-center justify-between p-4 bg-luxury-gray-800/50 rounded-xl border border-luxury-gold/10">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 rounded-lg bg-luxury-gold/10">
+                      {React.createElement(TYPE_ICON[creation.type], { size: 20, className: "text-luxury-gold" })}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Quick actions */}
-          <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
-            <div className="mb-6">
-              <h3 className="luxury-heading-3 text-luxury-black">
-                {t("dash.quickActions")}
-              </h3>
-              <p className="luxury-body-small text-luxury-gray-500 mt-1">
-                {isHe ? "פעולות נפוצות" : "Common actions"}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {quickActions.map(({ to, icon: Icon, label }) => (
-                <Link
-                  key={to}
-                  to={to}
-                  className="luxury-card rounded-lg p-6 text-center luxury-hover-lift group"
-                >
-                  <div className="w-12 h-12 mx-auto mb-4 luxury-glass rounded-lg flex items-center justify-center group-hover:scale-110 luxury-transition">
-                    <Icon size={20} className="text-luxury-navy" />
+                    <div>
+                      <p className="luxury-body font-medium text-luxury-cream">{typeLabel(creation.type)}</p>
+                      <p className="luxury-description text-luxury-gray-400 text-sm">{formatDate(creation.createdAt)}</p>
+                    </div>
                   </div>
-                  <p className="luxury-body-small font-medium text-luxury-black">
-                    {label}
-                  </p>
-                </Link>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleCopyCreation(creation)}
+                      className="p-2 rounded-lg hover:bg-luxury-gold/10 transition-colors"
+                    >
+                      {copiedId === creation.id ? (
+                        <Check size={16} className="text-green-400" />
+                      ) : (
+                        <Copy size={16} className="text-luxury-gray-400 hover:text-luxury-gold" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleDownloadCreation(creation)}
+                      className="p-2 rounded-lg hover:bg-luxury-gold/10 transition-colors"
+                    >
+                      <Download size={16} className="text-luxury-gray-400 hover:text-luxury-gold" />
+                    </button>
+                  </div>
+                </div>
               ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── Archive tab ─── */}
-      {activeTab === "archive" && (
-        <div className="space-y-6 animate-fade-in">
-          {creations.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-20 h-20 luxury-glass rounded-2xl flex items-center justify-center mb-6">
-                <Archive size={32} className="text-luxury-gray-400" />
-              </div>
-              <h3 className="luxury-heading-3 text-luxury-black mb-2">
-                {isHe ? "הארכיון ריק" : "Archive is empty"}
-              </h3>
-              <p className="luxury-body text-luxury-gray-600 mb-8 max-w-md">
-                {isHe
-                  ? "כל יצירה שתפיקי תישמר כאן אוטומטית"
-                  : "Every creation you make is saved here automatically"}
-              </p>
-              <Link
-                to="/create"
-                className="luxury-gold-accent text-white px-8 py-4 rounded-lg font-medium hover:shadow-xl luxury-transition luxury-hover-lift"
-              >
-                {isHe ? "התחל ליצור" : "Start Creating"}
-              </Link>
             </div>
           ) : (
-            <>
-              <div className="mb-6">
-                <p className="luxury-body-small text-luxury-gray-500">
-                  {isHe ? `${creations.length} יצירות בארכיון` : `${creations.length} saved creations`}
-                </p>
-              </div>
-              <div className="space-y-4">
-                {creations.map(c => {
-                  const IconComp = TYPE_ICON[c.type];
-                  const isCopied = copiedId === c.id;
-                  return (
-                    <div key={c.id} className="luxury-card rounded-lg p-6">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-10 h-10 luxury-glass rounded-lg flex items-center justify-center shrink-0">
-                          <IconComp size={18} className="text-luxury-navy" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="luxury-caption text-luxury-gray-500">
-                              {typeLabel(c.type)}
-                            </span>
-                            <span className="luxury-caption text-luxury-gray-400">{formatDate(c.createdAt)}</span>
-                          </div>
-                          <p className="luxury-body font-medium text-luxury-black truncate">{c.title}</p>
-                        </div>
-                      </div>
-
-                      <div className="bg-luxury-gray-50 rounded-lg p-4 mb-4">
-                        <p className="luxury-body-small text-luxury-gray-700 leading-relaxed line-clamp-4 whitespace-pre-wrap">
-                          {c.content}
-                        </p>
-                      </div>
-
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => handleCopyCreation(c)}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg luxury-body-small font-medium luxury-transition ${
-                            isCopied
-                              ? "bg-green-50 text-green-700 border border-green-200"
-                              : "luxury-glass text-luxury-gray-700 hover:text-luxury-black"
-                          }`}
-                        >
-                          {isCopied
-                            ? <><Check size={14} />{isHe ? "הועתק" : "Copied"}</>
-                            : <><Copy size={14} />{isHe ? "העתק" : "Copy"}</>}
-                        </button>
-                        <button
-                          onClick={() => handleDownloadCreation(c)}
-                          className="flex-1 flex items-center justify-center gap-2 py-3 luxury-glass rounded-lg luxury-body-small font-medium text-luxury-gray-700 hover:text-luxury-black luxury-transition"
-                        >
-                          <Download size={14} />{isHe ? "הורד" : "Download"}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteCreation(c.id)}
-                          className="px-4 py-3 luxury-glass rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 luxury-transition"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
+            <div className="text-center py-12">
+              <Sparkles size={48} className="text-luxury-gold/30 mx-auto mb-4" />
+              <p className="luxury-body text-luxury-gray-400">
+                {isHe ? "אין פעילות עדיין. התחל ליצור!" : "No activity yet. Start creating!"}
+              </p>
+            </div>
           )}
         </div>
-      )}
-    </div>
+      </div>
     </div>
   );
 };

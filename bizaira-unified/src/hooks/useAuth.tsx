@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { safeGetItem, safeRemoveItem, hardResetApp } from "@/lib/safe-storage";
+import { safeGetItem, safeRemoveItem, safeGetSessionItem, safeRemoveSessionItem, hardResetApp } from "@/lib/safe-storage";
 import type { User, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
         if (user?.user) {
-          const onboardingData = safeGetItem("bizaira_onboarding");
+          const onboardingData = safeGetItem("bizaira_onboarding") || safeGetSessionItem("bizaira_onboarding");
           let parsedOnboarding = {};
           if (onboardingData) {
             try {
@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } catch (fetchError) {
               console.warn('Invalid onboarding data:', fetchError);
               safeRemoveItem("bizaira_onboarding");
+              safeRemoveSessionItem("bizaira_onboarding");
               parsedOnboarding = {};
             }
           }
@@ -93,6 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
           if (!insertError && newProfile) {
             safeRemoveItem("bizaira_onboarding");
+            safeRemoveSessionItem("bizaira_onboarding");
             setProfile(newProfile as Profile);
             return;
           }

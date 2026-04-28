@@ -8,7 +8,7 @@ import { saveCreation, trackDownload } from "@/lib/creations-store";
 import {
   ArrowRight, ArrowLeft, TrendingUp, TrendingDown, DollarSign,
   Users, Target, MessageSquare, BarChart3, Lock, Sparkles, Loader2,
-  PieChart, Download, FileText, Heart, HelpCircle, Trophy,
+  PieChart, Download, FileText, Heart, HelpCircle, Trophy, AlertTriangle, RefreshCw,
 } from "lucide-react";
 
 const MONTHS_HE = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
@@ -37,6 +37,7 @@ const BusinessAnalyticsPage = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isAsking, setIsAsking] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "monthly" | "ask">("overview");
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const revenue = Number(monthlyRevenue) || 0;
   const expenses = Number(monthlyExpenses) || 0;
@@ -60,6 +61,7 @@ const BusinessAnalyticsPage = () => {
   const handleStartAnalysis = async () => {
     if (revenue <= 0) return;
     setIsAnalyzing(true);
+    setAnalysisError(null);
     try {
       const answer = await generateAnalytics({
         revenue,
@@ -86,9 +88,7 @@ const BusinessAnalyticsPage = () => {
       setDataEntered(true);
     } catch (err: any) {
       console.error("Analytics generation failed:", err?.message || err);
-      setAnalysisResult(isHe
-        ? "לא הצלחתי לייצר ניתוח עסקי. נסה שוב מאוחר יותר."
-        : "Could not generate the business analysis. Please try again later.");
+      setAnalysisError(err?.message || (isHe ? "שגיאה ביצירת הניתוח" : "Analysis generation failed"));
     } finally {
       setIsAnalyzing(false);
     }
@@ -300,10 +300,28 @@ const BusinessAnalyticsPage = () => {
                 </button>
               </div>
             )}
-            {analysisResult && (
+            {analysisResult && !analysisError && (
               <div className="glass-card rounded-xl p-4 bg-background/70 border border-border/30 animate-fade-in-up">
-                <div className="flex items-center gap-2 mb-3"><SparkleIcon size={14} className="text-primary" /><span className="text-sm font-bold text-foreground">{isHe ? "תובנות AI" : "AI Insights"}</span></div>
+                <div className="flex items-center gap-2 mb-3"><BarChart3 size={14} className="text-primary" /><span className="text-sm font-bold text-foreground">{isHe ? "תובנות AI" : "AI Insights"}</span></div>
                 <div className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">{analysisResult}</div>
+              </div>
+            )}
+
+            {analysisError && (
+              <div className="glass-card rounded-xl p-4 bg-red-50 border border-red-200 animate-fade-in-up">
+                <div className="flex items-center gap-2 mb-3">
+                  <AlertTriangle size={14} className="text-red-500" />
+                  <span className="text-sm font-bold text-red-700">{isHe ? "שגיאה" : "Error"}</span>
+                </div>
+                <p className="text-sm text-red-600 mb-3">{analysisError}</p>
+                <button
+                  onClick={handleStartAnalysis}
+                  disabled={isAnalyzing}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                >
+                  <RefreshCw size={14} className={isAnalyzing ? "animate-spin" : ""} />
+                  {isHe ? "נסה שוב" : "Retry"}
+                </button>
               </div>
             )}
 

@@ -34,6 +34,37 @@ export const safeRemoveItem = (key: string): void => {
   }
 };
 
+export const safeSetSessionItem = (key: string, value: string): void => {
+  if (!isBrowser()) return;
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch (error) {
+    console.warn(`safeSetSessionItem failed for ${key}:`, error);
+  }
+};
+
+export const safeGetSessionItem = (key: string): string | null => {
+  if (!isBrowser()) return null;
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch (error) {
+    console.warn(`safeGetSessionItem failed for ${key}:`, error);
+    try {
+      window.sessionStorage.removeItem(key);
+    } catch {}
+    return null;
+  }
+};
+
+export const safeRemoveSessionItem = (key: string): void => {
+  if (!isBrowser()) return;
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch (error) {
+    console.warn(`safeRemoveSessionItem failed for ${key}:`, error);
+  }
+};
+
 export const safeJsonParse = <T>(key: string, fallback: T): T => {
   const raw = safeGetItem(key);
   if (!raw) return fallback;
