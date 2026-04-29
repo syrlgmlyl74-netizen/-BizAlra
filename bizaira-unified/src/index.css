@@ -256,6 +256,143 @@
   letter-spacing: 0.05em;
 }
 
+/* ── Hebrew Typography Hierarchy ── */
+.hebrew-heading-1 {
+  font-family: var(--font-assistant);
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+  color: hsl(var(--luxury-navy));
+  text-align: right;
+  direction: rtl;
+}
+
+.hebrew-heading-2 {
+  font-family: var(--font-heebo);
+  font-size: clamp(22px, 3.5vw, 30px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: hsl(var(--luxury-navy));
+  text-align: right;
+  direction: rtl;
+}
+
+.hebrew-heading-3 {
+  font-family: var(--font-assistant);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: hsl(var(--luxury-navy));
+  text-align: right;
+  direction: rtl;
+}
+
+.hebrew-body-large {
+  font-family: var(--font-heebo);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  color: hsl(var(--luxury-gray-600));
+  text-align: right;
+  direction: rtl;
+}
+
+.hebrew-body {
+  font-family: var(--font-heebo);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  color: hsl(var(--luxury-gray-700));
+  text-align: right;
+  direction: rtl;
+}
+
+.hebrew-body-small {
+  font-family: var(--font-assistant);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: hsl(var(--luxury-gray-600));
+  text-align: right;
+  direction: rtl;
+}
+
+.hebrew-caption {
+  font-family: var(--font-assistant);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  color: hsl(var(--luxury-gray-500));
+  text-transform: uppercase;
+  text-align: right;
+  direction: rtl;
+}
+
+/* ── Hebrew button styling for premium CTA balance ── */
+[dir="rtl"] button {
+  font-family: var(--font-assistant);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+  direction: rtl;
+}
+
+.personal-area-heading {
+  font-family: var(--font-assistant);
+  font-weight: 700;
+  color: hsl(var(--luxury-gold));
+  line-height: 1.05;
+}
+
+.personal-area-label {
+  font-family: var(--font-heebo);
+  font-weight: 300;
+  color: hsl(var(--luxury-cream));
+  letter-spacing: 0.02em;
+}
+
+.personal-area-card {
+  border: 1px solid rgba(250, 214, 102, 0.18);
+  background: rgba(5, 10, 20, 0.88);
+  box-shadow: 0 28px 60px -40px rgba(0, 0, 0, 0.6);
+}
+
+.personal-area-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  background: rgba(250, 214, 102, 0.12);
+  color: hsl(var(--luxury-gold));
+}
+
+.personal-area-action {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.personal-area-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 32px -22px rgba(0, 0, 0, 0.45);
+}
+
+/* ── Font rendering optimization for Hebrew ── */
+body[dir="rtl"],
+[dir="rtl"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern" 1;
+  text-rendering: optimizeLegibility;
+}
+
 /* ── Micro-interactions ── */
 .luxury-transition {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
