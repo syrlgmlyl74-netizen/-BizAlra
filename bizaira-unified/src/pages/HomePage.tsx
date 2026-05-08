@@ -1,65 +1,52 @@
 import { useNavigate } from "react-router-dom";
-import { Wand2, User, BarChart3, HelpCircle, Download, X, Clock } from "lucide-react";
+import { Wand2, User, BarChart3, Crown, HelpCircle } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useI18n } from "@/lib/i18n";
-import { useAuth } from "@/hooks/useAuth";
-import { getGuestSession } from "@/lib/guest-session";
-import { safeGetSessionItem } from "@/lib/safe-storage";
-import { getActivityStats } from "@/lib/activity-tracker";
 
-// Business-Luxury Color Palette (NO GOLD)
-const NAVY = "#0D2344";
-const CREAM = "#FBF4E8";
-const OFF_WHITE = "#F5F0E8";
-const LIGHT_TEXT = "#747474";
+// Luxury Color Palette
+const DEEP_MIDNIGHT_BLUE = "#001529";
 const PEARL_WHITE = "#F9FAFB";
 
 const HomePage = () => {
-  const { t, lang } = useI18n();
-  const { user, profile } = useAuth();
+  const { lang } = useI18n();
   const navigate = useNavigate();
   const isHe = lang === "he";
-  const isGuest = !user && safeGetSessionItem("onboarding_complete") === "true" && !!getGuestSession();
-  const guestSession = isGuest ? getGuestSession() : null;
 
-  const userName = profile?.full_name || user?.user_metadata?.full_name || (isGuest ? t("common.guest") : t("common.user"));
-  const { creationsCount, downloadsCount, totalActions, remainingActions } = getActivityStats();
-
-  // Feature cards matching specification exactly
+  // Feature cards for clean navigation
   const features = [
     {
       id: 1,
       icon: Wand2,
-      title: t("tool.studio.title"),
-      desc: t("tool.studio.desc"),
+      title: isHe ? "התחל ליצור" : "Start Creating",
+      desc: isHe ? "צור תוכן מותאם אישית" : "Create personalized content",
       path: "/create",
     },
     {
       id: 2,
       icon: User,
-      title: t("nav.dashboard"),
-      desc: t("home.tools.profile"),
+      title: isHe ? "אזור אישי" : "Personal Area",
+      desc: isHe ? "נהל את הפרופיל שלך" : "Manage your profile",
       path: "/dashboard",
     },
     {
       id: 3,
       icon: BarChart3,
-      title: t("tool.analytics.title"),
-      desc: t("tool.analytics.desc"),
-      path: "/create/analytics",
+      title: isHe ? "מעקב פעילות" : "Activity Tracking",
+      desc: isHe ? "צפה בסטטיסטיקות השימוש" : "View usage statistics",
+      path: "/analytics",
     },
     {
       id: 4,
-      icon: Clock,
-      title: t("tool.time.title"),
-      desc: t("tool.time.desc"),
-      path: "/create/time",
+      icon: Crown,
+      title: isHe ? "ניהול מנוי" : "Subscription Management",
+      desc: isHe ? "שדרג את התוכנית שלך" : "Upgrade your plan",
+      path: "/subscription",
     },
     {
       id: 5,
       icon: HelpCircle,
-      title: t("nav.support"),
-      desc: t("support.subtitle"),
+      title: isHe ? "תמיכה" : "Support",
+      desc: isHe ? "קבל עזרה ותמיכה" : "Get help and support",
       path: "/support",
     },
   ];
@@ -70,20 +57,17 @@ const HomePage = () => {
       dir={isHe ? "rtl" : "ltr"}
       style={{ backgroundColor: PEARL_WHITE }}
     >
-      {/* Header Greeting - Premium Minimalist */}
+      {/* Clean Header */}
       <div className="pt-8 pb-8 max-w-5xl mx-auto">
         <h1
           className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-3"
-          style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}
+          style={{ color: DEEP_MIDNIGHT_BLUE, fontFamily: "'Assistant', sans-serif", fontWeight: 700 }}
         >
-          {t("home.hero.title1")}
+          {isHe ? "היי, מה תרצה לבנות היום?" : "Hey, what would you like to build today?"}
         </h1>
-        <p className="text-base sm:text-lg" style={{ color: LIGHT_TEXT }}>
-          {t("home.hero.desc")}
-        </p>
       </div>
 
-      {/* Feature Cards Grid - 5 Card Layout */}
+      {/* Navigation Grid */}
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-4 md:gap-5">
           {features.map((feature) => {
@@ -95,13 +79,13 @@ const HomePage = () => {
                 className="group relative overflow-hidden rounded-2xl p-5 sm:p-6 text-left transition-all duration-300 hover:shadow-lg active:scale-95 border border-gray-200 hover:border-transparent"
                 style={{
                   backgroundColor: "#FFFFFF",
-                  boxShadow: "0 4px 12px rgba(13, 35, 68, 0.1)",
+                  boxShadow: "0 4px 12px rgba(0, 21, 41, 0.1)",
                 }}
               >
                 {/* Hover effect */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
-                  style={{ backgroundColor: NAVY }}
+                  style={{ backgroundColor: DEEP_MIDNIGHT_BLUE }}
                 />
 
                 {/* Content */}
@@ -115,7 +99,7 @@ const HomePage = () => {
                   </div>
                   <h3
                     className="text-lg sm:text-xl font-bold mb-1 text-gray-900 group-hover:text-white transition-colors duration-300"
-                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                    style={{ fontFamily: "'Assistant', sans-serif" }}
                   >
                     {feature.title}
                   </h3>
@@ -135,114 +119,6 @@ const HomePage = () => {
               </button>
             );
           })}
-        </div>
-      </div>
-
-      {/* Usage Tracking Section */}
-      <div className="max-w-5xl mx-auto mt-12 sm:mt-16">
-        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200">
-          <div className="text-center mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: "'Assistant', sans-serif" }}>
-              {t("dash.plan")}
-            </h3>
-            <p className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
-              {t("home.plan.free")}
-            </p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
-            {/* Progress Circle */}
-            <div className="relative">
-              <svg width="120" height="120" className="transform -rotate-90">
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="50"
-                  stroke="#E5E7EB"
-                  strokeWidth="8"
-                  fill="none"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="50"
-                  stroke={NAVY}
-                  strokeWidth="8"
-                  fill="none"
-                  strokeDasharray={`${(totalActions / limit) * 314} 314`}
-                  className="transition-all duration-500"
-                  style={{ filter: "drop-shadow(0 0 8px rgba(0, 31, 63, 0.3))" }}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
-                    {totalActions} / {limit}
-                  </div>
-                  <div className="text-xs text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
-                    {t("home.usage.actions")}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Counts */}
-            <div className="flex-1 grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <Wand2 size={16} className="text-gray-600 mr-1" />
-                  <span className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
-                    {t("home.usage.created")}
-                  </span>
-                </div>
-                <div className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
-                  {creationsCount}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <Download size={16} className="text-gray-600 mr-1" />
-                  <span className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
-                    {t("home.usage.downloaded")}
-                  </span>
-                </div>
-                <div className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
-                  {downloadsCount}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <X size={16} className="text-gray-600 mr-1" />
-                  <span className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
-                    {t("home.usage.deletions")}
-                  </span>
-                </div>
-                <div className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
-                  {deletionsCount}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <BarChart3 size={16} className="text-gray-600 mr-1" />
-                  <span className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
-                    {isHe ? "פעולות" : "Actions"}
-                  </span>
-                </div>
-                <div className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
-                  {totalActions}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Renewal Date */}
-          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
-            <Clock size={16} />
-            <span>
-              {isHe ? "מתחדש ב-" : "Renews on "}
-              {renewalLabel}
-            </span>
-          </div>
         </div>
       </div>
       <BottomNav />

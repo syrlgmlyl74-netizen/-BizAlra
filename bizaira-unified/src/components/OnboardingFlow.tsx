@@ -3,7 +3,6 @@ import { useI18n } from "@/lib/i18n";
 import { toast } from "sonner";
 import { createGuestSession, updateGuestSession, saveGuestOnboardingAnswers } from "@/lib/guest-session";
 import { safeSetSessionItem } from "@/lib/safe-storage";
-import AuthGateway from "@/components/AuthGateway";
 import {
   ArrowLeft, Check,
   ShoppingBag, Utensils, Star, Home, Monitor, Briefcase,
@@ -16,7 +15,7 @@ interface OnboardingFlowProps {
   onComplete: (mode: "guest" | "auth") => void;
 }
 
-type Step = "greeting" | "language" | "business" | "business-info" | "audience" | "audience-info" | "goal" | "guest-auth-choice";
+type Step = "greeting" | "language" | "business" | "business-info" | "audience" | "audience-info" | "goal";
 
 type LangOption = {
   label: string;
@@ -618,7 +617,18 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                 <ArrowLeft size={20} style={{ transform: isHe ? "scaleX(-1)" : "none" }} />
               </button>
               <button
-                onClick={() => goal && setStep("guest-auth-choice")}
+                onClick={() => {
+                  if (goal) {
+                    const onboardingData = {
+                      business_type: businessType,
+                      target_audience: audience,
+                      business_goals: goal,
+                    };
+                    saveGuestOnboardingAnswers(onboardingData);
+                    safeSetSessionItem("onboarding_complete", "true");
+                    onComplete("auth");
+                  }
+                }}
                 disabled={!goal}
                 style={{
                   flex: 1,
@@ -642,28 +652,6 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           </div>
         )}
 
-        {/* ─── Screen 6: Auth Gateway ─── */}
-        {step === "guest-auth-choice" && (
-          <AuthGateway
-            onComplete={(mode) => {
-              const onboardingData = {
-                business_type: businessType,
-                target_audience: audience,
-                business_goals: goal,
-              };
-              saveGuestOnboardingAnswers(onboardingData);
-              if (mode === "auth") {
-                safeSetSessionItem("onboarding_complete", "true");
-              }
-              onComplete(mode);
-            }}
-            onboardingData={{
-              business_type: businessType,
-              target_audience: audience,
-              business_goals: goal,
-            }}
-          />
-        )}
       </div>
     </div>
   );
