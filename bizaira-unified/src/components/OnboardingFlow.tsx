@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
 import { toast } from "sonner";
 import { createGuestSession, updateGuestSession, saveGuestOnboardingAnswers } from "@/lib/guest-session";
+import { safeSetSessionItem } from "@/lib/safe-storage";
+import AuthGateway from "@/components/AuthGateway";
 import {
   ArrowLeft, Check,
   ShoppingBag, Utensils, Star, Home, Monitor, Briefcase,
@@ -14,7 +16,7 @@ interface OnboardingFlowProps {
   onComplete: (mode: "guest" | "auth") => void;
 }
 
-type Step = "greeting" | "language" | "business" | "business-info" | "audience" | "audience-info" | "goal" | "done" | "guest-auth-choice";
+type Step = "greeting" | "language" | "business" | "business-info" | "audience" | "audience-info" | "goal" | "guest-auth-choice";
 
 type LangOption = {
   label: string;
@@ -30,10 +32,11 @@ const BG_LIGHT = "#F5F5F5";
 
 const languageOptions: LangOption[] = [
   { label: "English", value: "en" },
+  { label: "עברית", value: "he" },
 ];
 
 const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
-  const { lang, setLang } = useI18n();
+  const { lang, setLang, t } = useI18n();
   const isHe = lang === "he";
 
   const [step, setStep] = useState<Step>("greeting");
@@ -45,34 +48,34 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   const [goal, setGoal] = useState("");
 
   const businessTypes = [
-    { label: "Fashion", Icon: ShoppingBag },
-    { label: "Food", Icon: Utensils },
-    { label: "Beauty", Icon: Star },
-    { label: "Real Estate", Icon: Home },
-    { label: "Digital", Icon: Monitor },
-    { label: "Services", Icon: Briefcase },
-    { label: "Health", Icon: Heart },
-    { label: "Education", Icon: GraduationCap },
-    { label: "Other", Icon: MoreHorizontal },
+    { label: t("onboarding.business.fashion"), Icon: ShoppingBag },
+    { label: t("onboarding.business.food"), Icon: Utensils },
+    { label: t("onboarding.business.beauty"), Icon: Star },
+    { label: t("onboarding.business.realEstate"), Icon: Home },
+    { label: t("onboarding.business.digital"), Icon: Monitor },
+    { label: t("onboarding.business.services"), Icon: Briefcase },
+    { label: t("onboarding.business.health"), Icon: Heart },
+    { label: t("onboarding.business.education"), Icon: GraduationCap },
+    { label: t("onboarding.business.other"), Icon: MoreHorizontal },
   ];
 
   const audiences = [
-    { label: "Teens", Icon: Baby },
-    { label: "Adults", Icon: User },
-    { label: "Women", Icon: Users },
-    { label: "Men", Icon: UserCheck },
-    { label: "Businesses (B2B)", Icon: Building },
-    { label: "Parents", Icon: PartyPopper },
-    { label: "General", Icon: Globe },
+    { label: t("onboarding.audience.teens"), Icon: Baby },
+    { label: t("onboarding.audience.adults"), Icon: User },
+    { label: t("onboarding.audience.women"), Icon: Users },
+    { label: t("onboarding.audience.men"), Icon: UserCheck },
+    { label: t("onboarding.audience.businesses"), Icon: Building },
+    { label: t("onboarding.audience.parents"), Icon: PartyPopper },
+    { label: t("onboarding.audience.general"), Icon: Globe },
   ];
 
   const goals = [
-    { label: "More Sales", Icon: TrendingUp },
-    { label: "More Exposure", Icon: Megaphone },
-    { label: "Social Content", Icon: Share2 },
-    { label: "Professional Branding", Icon: Award },
-    { label: "Save Time", Icon: Clock },
-    { label: "Attract Clients", Icon: UserPlus },
+    { label: t("onboarding.goal.sales"), Icon: TrendingUp },
+    { label: t("onboarding.goal.exposure"), Icon: Megaphone },
+    { label: t("onboarding.goal.social"), Icon: Share2 },
+    { label: t("onboarding.goal.branding"), Icon: Award },
+    { label: t("onboarding.goal.time"), Icon: Clock },
+    { label: t("onboarding.goal.clients"), Icon: UserPlus },
   ];
 
   const handleLanguageSelect = (option: LangOption) => {
@@ -120,10 +123,10 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         {step === "greeting" && (
           <div className="text-center animate-fade-in" dir="ltr">
             <h1 className="mb-4" style={{ color: NAVY, fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', fontWeight: 700, lineHeight: 1.3, letterSpacing: '-0.5px' }}>
-              Design Your Business Future with BizAIra
+              {t("onboarding.greeting.title")}
             </h1>
             <p className="mb-12 max-w-md mx-auto" style={{ color: MID_GRAY, fontFamily: "'Montserrat', sans-serif", fontSize: '1rem', fontWeight: 400, lineHeight: 1.6 }}>
-              Just 4 short questions to tailor a unique experience for your brand. It only takes a minute.
+              {t("onboarding.greeting.subtitle")}
             </p>
 
             <button
@@ -156,7 +159,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
-              Get Started
+              {t("onboarding.greeting.button")}
             </button>
           </div>
         )}
@@ -248,7 +251,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                   opacity: selectedLanguage ? 1 : 0.6,
                 }}
               >
-                {isHe ? "המשך" : "Continue"}
+                {t("onboarding.continue")}
               </button>
             </div>
           </div>
@@ -257,7 +260,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         {/* ─── Screen 3: Business Type ─── */}
         {step === "business" && (
           <div className="animate-fade-in">
-            <StepHeader num={2} total={4} title="What's your business type?" isHe={isHe} />
+            <StepHeader num={2} total={4} title={t("onboarding.business.title")} isHe={isHe} />
             
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "32px" }}>
               {businessTypes.map(({ label, Icon }) => {
@@ -343,7 +346,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                   opacity: businessType ? 1 : 0.6,
                 }}
               >
-                {isHe ? "המשך" : "Continue"}
+                {t("onboarding.continue")}
               </button>
             </div>
           </div>
@@ -365,12 +368,10 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
               <Check size={32} style={{ color: NAVY, strokeWidth: 3 }} />
             </div>
             <h2 className={`hebrew-heading-2 ${isHe ? 'hebrew-heading-2' : ''} mb-4`} style={{ color: NAVY, fontFamily: isHe ? "var(--font-heebo)" : "var(--font-playfair)" }}>
-              {isHe ? "נהדר!" : "Perfect!"}
+              {t("onboarding.businessInfo.perfect")}
             </h2>
             <p className={`hebrew-body ${isHe ? 'hebrew-body' : ''} mb-12 max-w-md mx-auto`} style={{ color: MID_GRAY }}>
-              {isHe
-                ? `נתאים את כל דבר עבורך בתחום ה${businessType} — תוכן מדויק, תמונות מדהימות, וניסוחים שדוברים בשפת הלקוחות שלך.`
-                : `We'll tailor everything in the ${businessType} space — precise content, stunning photos, and copy that speaks to your customers.`}
+              {t("onboarding.businessInfo.confirmationDescription").replace("{{businessType}}", businessType)}
             </p>
             <button
               onClick={() => setStep("audience")}
@@ -396,7 +397,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                 e.currentTarget.style.color = NAVY;
               }}
             >
-              {isHe ? "שאלה הבאה" : "Next question"}
+              {t("onboarding.businessInfo.next")}
             </button>
           </div>
         )}
@@ -404,7 +405,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         {/* ─── Screen 4: Audience ─── */}
         {step === "audience" && (
           <div className="animate-fade-in">
-            <StepHeader num={3} total={4} title="Who's your audience?" isHe={isHe} />
+            <StepHeader num={3} total={4} title={t("onboarding.audience.title")} isHe={isHe} />
             
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "32px" }}>
               {audiences.map(({ label, Icon }) => {
@@ -490,7 +491,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                   opacity: audience ? 1 : 0.6,
                 }}
               >
-                {isHe ? "המשך" : "Continue"}
+                {t("onboarding.continue")}
               </button>
             </div>
           </div>
@@ -512,12 +513,10 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
               <Check size={32} style={{ color: NAVY, strokeWidth: 3 }} />
             </div>
             <h2 className={`hebrew-heading-2 ${isHe ? 'hebrew-heading-2' : ''} mb-4`} style={{ color: NAVY, fontFamily: isHe ? "var(--font-heebo)" : "var(--font-playfair)" }}>
-              {isHe ? "מעולה!" : "Excellent!"}
+              {t("onboarding.audienceInfo.excellent")}
             </h2>
             <p className={`hebrew-body ${isHe ? 'hebrew-body' : ''} mb-12 max-w-md mx-auto`} style={{ color: MID_GRAY }}>
-              {isHe
-                ? `נתאים את הטון, הסגנון והשפה כדי פנות בדיוק ל${audience} — תוכן שמושך, מדבר ולהניע לפעולה.`
-                : `We'll match the tone, style, and language to reach ${audience} — content that attracts, speaks, and drives action.`}
+              {t("onboarding.audienceInfo.description").replace("{{audience}}", audience)}
             </p>
             <button
               onClick={() => setStep("goal")}
@@ -543,7 +542,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                 e.currentTarget.style.color = NAVY;
               }}
             >
-              {isHe ? "שאלה אחרונה" : "Last question"}
+              {t("onboarding.audienceInfo.last")}
             </button>
           </div>
         )}
@@ -551,7 +550,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         {/* ─── Screen 5: Goal ─── */}
         {step === "goal" && (
           <div className="animate-fade-in">
-            <StepHeader num={4} total={4} title="What's your current goal?" isHe={isHe} />
+            <StepHeader num={4} total={4} title={t("onboarding.goal.title")} isHe={isHe} />
             
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "32px" }}>
               {goals.map(({ label, Icon }) => {
@@ -619,7 +618,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
                 <ArrowLeft size={20} style={{ transform: isHe ? "scaleX(-1)" : "none" }} />
               </button>
               <button
-                onClick={() => goal && setStep("done")}
+                onClick={() => goal && setStep("guest-auth-choice")}
                 disabled={!goal}
                 style={{
                   flex: 1,
@@ -643,168 +642,27 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           </div>
         )}
 
-        {/* ─── Screen 6: Done ─── */}
-        {step === "done" && (
-          <div className="animate-fade-in text-center">
-            <div style={{
-              width: "80px",
-              height: "80px",
-              borderRadius: "50%",
-              background: `linear-gradient(135deg, ${NAVY} 0%, #083151 100%)`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 24px",
-              boxShadow: `0 12px 40px -12px ${NAVY}`,
-            }}>
-              <Check size={40} style={{ color: WHITE, strokeWidth: 3 }} />
-            </div>
-            <h2 className={`hebrew-heading-2 ${isHe ? 'hebrew-heading-2' : ''} mb-4`} style={{ color: NAVY, fontFamily: isHe ? "var(--font-heebo)" : "var(--font-playfair)" }}>
-              {isHe ? "הכל מוכן!" : "All Set!"}
-            </h2>
-            <p className={`hebrew-body ${isHe ? 'hebrew-body' : ''} mb-12 max-w-md mx-auto`} style={{ color: MID_GRAY }}>
-              {isHe
-                ? "התאמנו הכל בדיוק בשבילך — תוכן חכם, מדויק ומותאם לעסק שלך. בלי סיבוכים, בלי המתנה. בואו נבנה משהו גדול."
-                : "Everything's tailored just for you — smart, precise content for your business. No complications, no waiting. Let's build something great."}
-            </p>
-            <button
-              onClick={() => setStep("guest-auth-choice")}
-              style={{
-                width: "100%",
-                padding: "16px 24px",
-                borderRadius: "12px",
-                backgroundColor: NAVY,
-                color: WHITE,
-                fontSize: isHe ? "1.125rem" : "1rem",
-                fontWeight: 600,
-                fontFamily: isHe ? "var(--font-assistant)" : "var(--font-montserrat)",
-                letterSpacing: "0.01em",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: `0 12px 30px -12px ${NAVY}`,
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = `0 16px 40px -8px ${NAVY}`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = `0 12px 30px -12px ${NAVY}`;
-              }}
-            >
-              {isHe ? "בואו נתחיל!" : "Let's Start!"}
-            </button>
-          </div>
-        )}
-
-        {/* ─── Screen 7: Guest vs Auth Choice ─── */}
+        {/* ─── Screen 6: Auth Gateway ─── */}
         {step === "guest-auth-choice" && (
-          <div className="animate-fade-in text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4" style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}>
-              {isHe ? "בואו נתחילו" : "Let's Get Started"}
-            </h2>
-            <p className="mb-8 max-w-md mx-auto" style={{ color: MID_GRAY }}>
-              {isHe
-                ? "תוכלו להמשיך כאורח או להתחבר כדי לשמור את כל היצירות שלכם."
-                : "You can continue as a guest or sign in to save all your creations."}
-            </p>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "24px" }}>
-              {/* Guest Option */}
-              <button
-                onClick={() => {
-                  const onboardingData = {
-                    business_type: businessType,
-                    target_audience: audience,
-                    business_goals: goal,
-                  };
-                  createGuestSession();
-                  updateGuestSession(onboardingData);
-                  saveGuestOnboardingAnswers(onboardingData);
-                  onComplete("guest");
-                }}
-                style={{
-                  padding: "24px",
-                  borderRadius: "12px",
-                  backgroundColor: "hsl(0 0% 100%)",
-                  border: `2px solid ${LIGHT_GRAY}`,
-                  color: NAVY,
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "12px",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = NAVY;
-                  e.currentTarget.style.backgroundColor = "hsl(220 25% 97%)";
-                  e.currentTarget.style.boxShadow = `0 6px 16px -6px ${NAVY}`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = LIGHT_GRAY;
-                  e.currentTarget.style.backgroundColor = "hsl(0 0% 100%)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <User size={24} />
-                <div>
-                  <p style={{ fontWeight: 600, fontSize: "1rem" }}>
-                    {isHe ? "המשך כאורח" : "Continue as Guest"}
-                  </p>
-                  <p style={{ fontSize: "0.875rem", marginTop: "4px", color: MID_GRAY }}>
-                    {isHe ? "ללא שמירה" : "No saving"}
-                  </p>
-                </div>
-              </button>
-
-              {/* Register Option */}
-              <button
-                onClick={() => {
-                  const onboardingData = {
-                    business_type: businessType,
-                    target_audience: audience,
-                    business_goals: goal,
-                  };
-                  saveGuestOnboardingAnswers(onboardingData);
-                  onComplete("auth");
-                }}
-                style={{
-                  padding: "24px",
-                  borderRadius: "12px",
-                  backgroundColor: NAVY,
-                  border: `2px solid ${NAVY}`,
-                  color: WHITE,
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "12px",
-                  boxShadow: `0 6px 16px -6px ${NAVY}`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = `0 8px 24px -6px ${NAVY}`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = `0 6px 16px -6px ${NAVY}`;
-                }}
-              >
-                <UserPlus size={24} />
-                <div>
-                  <p style={{ fontWeight: 600, fontSize: "1rem" }}>
-                    {isHe ? "התחברות / הרשמה" : "Login / Sign Up"}
-                  </p>
-                  <p style={{ fontSize: "0.875rem", marginTop: "4px", color: "rgba(255,255,255,0.7)" }}>
-                    {isHe ? "עם שמירה" : "With saving"}
-                  </p>
-                </div>
-              </button>
-            </div>
-          </div>
+          <AuthGateway
+            onComplete={(mode) => {
+              const onboardingData = {
+                business_type: businessType,
+                target_audience: audience,
+                business_goals: goal,
+              };
+              saveGuestOnboardingAnswers(onboardingData);
+              if (mode === "auth") {
+                safeSetSessionItem("onboarding_complete", "true");
+              }
+              onComplete(mode);
+            }}
+            onboardingData={{
+              business_type: businessType,
+              target_audience: audience,
+              business_goals: goal,
+            }}
+          />
         )}
       </div>
     </div>

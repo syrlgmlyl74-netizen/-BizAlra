@@ -121,7 +121,6 @@ const ImageStudioPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-luxury-gray-50 to-luxury-white">
       <div className="max-w-7xl mx-auto px-6 py-8">
-
         {/* Header */}
         <div className="mb-8 animate-fade-in">
           <div className="flex items-center justify-between">
@@ -151,25 +150,10 @@ const ImageStudioPage = () => {
           </div>
         </div>
 
-
-      {/* Locked overlay */}
-      {isLocked && (
-        <div className="max-w-6xl mx-auto w-full px-4 pt-6">
-          <div className="glass-card rounded-2xl p-8 text-center space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto">
-              <Lock size={28} className="text-red-500" />
-            </div>
-            <h2 className="text-lg font-bold text-foreground">{isHe ? "הגעת למגבלה החודשית" : "Monthly Limit Reached"}</h2>
-            <p className="text-sm text-muted-foreground">{isHe ? "השתמשת ב-5 פעולות החודש. הסטודיו ייפתח מחדש בתחילת החודש הבא." : "You've used 5 actions this month. The studio will unlock at the start of next month."}</p>
-            <Link to="/pricing" className="inline-block gradient-glow text-primary-foreground font-bold px-6 py-3 rounded-xl hover:scale-[1.02] transition-all">
-              {isHe ? "שדרג ל-PRO" : "Upgrade to PRO"}
-            </Link>
-          </div>
-        </div>
-      )}
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content with Blur Overlay */}
+        <div className={`relative ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* Preview Area */}
           <div className="lg:col-span-2 space-y-6">
@@ -423,6 +407,31 @@ const ImageStudioPage = () => {
             ) : null}
           </div>
         </div>
+        </div>
+
+        {/* Upgrade Overlay */}
+        {isLocked && (
+          <div className="fixed inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200 max-w-md mx-4 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-6">
+                <Lock size={28} className="text-gray-600" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-4" style={{ fontFamily: "'Assistant', sans-serif" }}>
+                {isHe ? "הגעת למגבלה החודשית" : "You've reached your monthly limit"}
+              </h2>
+              <p className="text-sm text-gray-600 mb-6" style={{ fontFamily: "'Heebo', sans-serif" }}>
+                {isHe ? "שדרג עכשיו כדי להמשיך ליצור תמונות ללא הגבלה" : "Unlock unlimited creations and premium features now"}
+              </p>
+              <Link
+                to="/pricing"
+                className="inline-block bg-[#001F3F] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#002A4F] transition-colors"
+                style={{ fontFamily: "'Assistant', sans-serif" }}
+              >
+                {isHe ? "לשדרג כעת" : "Upgrade now"}
+              </Link>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

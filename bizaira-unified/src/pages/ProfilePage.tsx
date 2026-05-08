@@ -87,7 +87,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F0E6] text-[#0B1E3B]" dir={isHe ? "rtl" : "ltr"}>
+    <div className="min-h-screen" style={{ backgroundColor: "#F9FAFB", color: "#0D2344" }} dir={isHe ? "rtl" : "ltr"}>
       <div className="max-w-7xl mx-auto px-6 py-16">
         <header className="rounded-[32px] border border-white/70 bg-white/90 p-10 shadow-[0_30px_80px_-40px_rgba(9,17,34,0.45)] backdrop-blur-xl">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
@@ -104,7 +104,7 @@ const ProfilePage = () => {
                   : "A refined personal area to manage your plan status, creation activity, and monthly credits."}
               </p>
             </div>
-            <div className="rounded-[28px] border border-[#E9E4DA] bg-[#F7F1E7] p-6 shadow-[0_18px_50px_-32px_rgba(14,24,56,0.18)]">
+            <div className="rounded-[28px] border border-[#E9E4DA] bg-white p-6 shadow-[0_18px_50px_-32px_rgba(14,24,56,0.18)]">
               <p className="text-xs uppercase tracking-[0.3em] text-[#4B5163] mb-2" style={{ fontFamily: "Assistant, sans-serif", fontWeight: 700 }}>
                 {isHe ? "תוכנית נוכחית" : "Current Plan"}
               </p>
@@ -124,7 +124,7 @@ const ProfilePage = () => {
         </header>
 
         <section className="mt-10 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-          <article className="rounded-[32px] border border-[#E9E4DA] bg-[#FFFFFF] p-8 shadow-[0_24px_60px_-40px_rgba(9,17,34,0.18)]">
+          <article className="rounded-[32px] border border-[#E9E4DA] bg-white p-8 shadow-[0_24px_60px_-40px_rgba(9,17,34,0.18)]">
             <div className="flex flex-col gap-4 mb-8">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
                 <div>
@@ -149,7 +149,7 @@ const ProfilePage = () => {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-[24px] bg-[#F7F1E7] p-5 border border-[#E9E4DA]">
+              <div className="rounded-[24px] bg-white p-5 border border-[#E9E4DA]">
                 <p className="text-xs uppercase tracking-[0.3em] text-[#4B5163] mb-3" style={{ fontFamily: "Assistant, sans-serif", fontWeight: 700 }}>
                   {isHe ? "יצירות" : "Created"}
                 </p>
@@ -157,7 +157,7 @@ const ProfilePage = () => {
                   {creationsCount}
                 </p>
               </div>
-              <div className="rounded-[24px] bg-[#F7F1E7] p-5 border border-[#E9E4DA]">
+              <div className="rounded-[24px] bg-white p-5 border border-[#E9E4DA]">
                 <p className="text-xs uppercase tracking-[0.3em] text-[#4B5163] mb-3" style={{ fontFamily: "Assistant, sans-serif", fontWeight: 700 }}>
                   {isHe ? "הורדות" : "Downloads"}
                 </p>
@@ -165,7 +165,7 @@ const ProfilePage = () => {
                   {downloadsCount}
                 </p>
               </div>
-              <div className="rounded-[24px] bg-[#F7F1E7] p-5 border border-[#E9E4DA]">
+              <div className="rounded-[24px] bg-white p-5 border border-[#E9E4DA]">
                 <p className="text-xs uppercase tracking-[0.3em] text-[#4B5163] mb-3" style={{ fontFamily: "Assistant, sans-serif", fontWeight: 700 }}>
                   {isHe ? "מחיקות" : "Deletions"}
                 </p>
@@ -173,7 +173,7 @@ const ProfilePage = () => {
                   {deletionsCount}
                 </p>
               </div>
-              <div className="rounded-[24px] bg-[#F7F1E7] p-5 border border-[#E9E4DA]">
+              <div className="rounded-[24px] bg-white p-5 border border-[#E9E4DA]">
                 <p className="text-xs uppercase tracking-[0.3em] text-[#4B5163] mb-3" style={{ fontFamily: "Assistant, sans-serif", fontWeight: 700 }}>
                   {isHe ? "פעילויות כלליות" : "General Actions"}
                 </p>
@@ -183,7 +183,7 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            <div className="mt-8 rounded-[28px] border border-[#E9E4DA] bg-[#F8F6F0] p-6">
+            <div className="mt-8 rounded-[28px] border border-[#E9E4DA] bg-white p-6">
               <div className="flex items-center gap-3 text-sm text-[#4B5163]" style={{ fontFamily: "Heebo, sans-serif" }}>
                 <Clock size={18} />
                 <span>{isHe ? "הקרדיטים יתחדשו ב" : "Credits refresh on"}</span>

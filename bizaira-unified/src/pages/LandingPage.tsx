@@ -32,7 +32,9 @@ const LandingPage = () => {
   }, [user, loading]);
 
   const onOnboardingComplete = useCallback((mode: OnboardingCompleteMode) => {
-    safeSetSessionItem("onboarding_complete", "true");
+    if (mode === "auth") {
+      safeSetSessionItem("onboarding_complete", "true");
+    }
     if (mode === "guest") {
       setStep("home");
     } else {

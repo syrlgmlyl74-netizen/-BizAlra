@@ -6,8 +6,8 @@ import {
   ChevronLeft, ChevronRight,
 } from "lucide-react";
 
-const CREAM_BG = "#FCFAF7";
-const NAVY = "#001830";
+const PEARL_WHITE = "#F9FAFB";
+const NAVY = "#0D2344";
 const GRAY_TEXT = "#6B7280";
 const ICON_BG = "#E9EEF5";
 
@@ -64,7 +64,7 @@ const CreatePage = () => {
   ];
 
   return (
-    <div className="min-h-screen pb-32" dir={isHe ? "rtl" : "ltr"} style={{ backgroundColor: CREAM_BG }}>
+    <div className="min-h-screen pb-32" dir={isHe ? "rtl" : "ltr"} style={{ backgroundColor: PEARL_WHITE }}>
       <div className="px-6 pt-8 pb-6">
         <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: GRAY_TEXT, letterSpacing: "0.1em" }}>
           {isHe ? "סטודיו AI" : "AI STUDIO"}

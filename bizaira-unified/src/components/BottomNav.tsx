@@ -6,33 +6,29 @@ const NAVY = "#011224";
 const ACTIVE = "#0D2344";
 
 const BottomNav = () => {
-  const { lang } = useI18n();
+  const { t, lang } = useI18n();
   const isHe = lang === "he";
 
   const navItems = [
     { 
       to: "/", 
       icon: Home, 
-      labelHe: "בית",
-      labelEn: "Home"
+      label: t("nav.home")
     },
     { 
       to: "/create", 
       icon: Wand2, 
-      labelHe: "סטודיו",
-      labelEn: "Studio"
+      label: t("nav.create")
     },
     { 
       to: "/dashboard", 
       icon: User, 
-      labelHe: "אזור אישי",
-      labelEn: "Profile"
+      label: t("nav.dashboard")
     },
     { 
       to: "/support", 
       icon: HelpCircle, 
-      labelHe: "תמיכה",
-      labelEn: "Support"
+      label: t("nav.support")
     },
   ];
 
@@ -69,7 +65,7 @@ const BottomNav = () => {
                     transition: "color 200ms ease-in-out, font-weight 200ms ease-in-out",
                   }}
                 >
-                  {isHe ? item.labelHe : item.labelEn}
+                  {item.label}
                 </span>
               </div>
             )}

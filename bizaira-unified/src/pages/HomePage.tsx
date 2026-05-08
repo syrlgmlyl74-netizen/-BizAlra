@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Wand2, User, BarChart3, CreditCard, HelpCircle } from "lucide-react";
+import { Wand2, User, BarChart3, HelpCircle, Download, X, Clock } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,16 +12,17 @@ const NAVY = "#0D2344";
 const CREAM = "#FBF4E8";
 const OFF_WHITE = "#F5F0E8";
 const LIGHT_TEXT = "#747474";
+const PEARL_WHITE = "#F9FAFB";
 
 const HomePage = () => {
-  const { lang } = useI18n();
+  const { t, lang } = useI18n();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const isHe = lang === "he";
   const isGuest = !user && safeGetSessionItem("onboarding_complete") === "true" && !!getGuestSession();
   const guestSession = isGuest ? getGuestSession() : null;
 
-  const userName = profile?.full_name || user?.user_metadata?.full_name || (isGuest ? (isHe ? "אורח" : "Guest") : (isHe ? "משתמש" : "User"));
+  const userName = profile?.full_name || user?.user_metadata?.full_name || (isGuest ? t("common.guest") : t("common.user"));
   const { creationsCount, downloadsCount, totalActions, remainingActions } = getActivityStats();
 
   // Feature cards matching specification exactly
@@ -29,52 +30,37 @@ const HomePage = () => {
     {
       id: 1,
       icon: Wand2,
-      titleHe: "התחל ליצור",
-      titleEn: "Start Creating",
-      descHe: "תוכן שיווקי, תמונות וסרטונים",
-      descEn: "Marketing content, photos & videos",
+      title: t("tool.studio.title"),
+      desc: t("tool.studio.desc"),
       path: "/create",
-      bgColor: "#0D2344",
     },
     {
       id: 2,
       icon: User,
-      titleHe: "אזור אישי",
-      titleEn: "My Area",
-      descHe: "פרופיל והגדרות אישיות",
-      descEn: "Profile & Personal Settings",
-      path: "/profile",
-      bgColor: "#1A3A52",
+      title: t("nav.dashboard"),
+      desc: t("home.tools.profile"),
+      path: "/dashboard",
     },
     {
       id: 3,
       icon: BarChart3,
-      titleHe: "מעקב פעילות",
-      titleEn: "Activity Tracking",
-      descHe: "ניתוח עסקי ותובנות חכמות",
-      descEn: "Business analytics & insights",
+      title: t("tool.analytics.title"),
+      desc: t("tool.analytics.desc"),
       path: "/create/analytics",
-      bgColor: "#264B6A",
     },
     {
       id: 4,
-      icon: CreditCard,
-      titleHe: "ניהול מנוי",
-      titleEn: "Manage Subscription",
-      descHe: "תכניות ותמחור",
-      descEn: "Plans & Pricing",
-      path: "/pricing",
-      bgColor: "#2D5A78",
+      icon: Clock,
+      title: t("tool.time.title"),
+      desc: t("tool.time.desc"),
+      path: "/create/time",
     },
     {
       id: 5,
       icon: HelpCircle,
-      titleHe: "תמיכה",
-      titleEn: "Support",
-      descHe: "עזרה וליווי מקצועי",
-      descEn: "Help & Professional Guidance",
+      title: t("nav.support"),
+      desc: t("support.subtitle"),
       path: "/support",
-      bgColor: "#376386",
     },
   ];
 
@@ -82,106 +68,68 @@ const HomePage = () => {
     <div
       className="min-h-screen pb-24 px-4 sm:px-6 md:px-8"
       dir={isHe ? "rtl" : "ltr"}
-      style={{ backgroundColor: CREAM }}
+      style={{ backgroundColor: PEARL_WHITE }}
     >
-      {isGuest && (
-        <div className="max-w-5xl mx-auto mb-8 p-6 rounded-[28px]" style={{ backgroundColor: "#EAF3FF", border: "1px solid rgba(13, 35, 68, 0.08)" }}>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: NAVY }}>
-                {isHe ? "מצב אורח" : "Guest mode"}
-              </p>
-              <h2 className="text-2xl font-bold mt-2" style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}>
-                {isHe ? "אתה ממשיך כאורח" : "You are continuing as a guest"}
-              </h2>
-              <p className="mt-2 text-sm" style={{ color: LIGHT_TEXT }}>
-                {guestSession?.businessType
-                  ? isHe
-                    ? `תחום העסק: ${guestSession.businessType}`
-                    : `Business type: ${guestSession.businessType}`
-                  : isHe
-                  ? "המשך לדפדף וליצור. התחבר כדי לשמור את היצירות שלך." 
-                  : "Browse and create. Sign in to save your work."}
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/auth")}
-              className="rounded-2xl px-5 py-3 font-semibold"
-              style={{ backgroundColor: NAVY, color: "#FFFFFF" }}
-            >
-              {isHe ? "התחבר לשמירה" : "Sign in to save"}
-            </button>
-          </div>
-        </div>
-      )}
-      {/* Header Greeting - Specification Format */}
+      {/* Header Greeting - Premium Minimalist */}
       <div className="pt-8 pb-8 max-w-5xl mx-auto">
         <h1
           className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-3"
           style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}
         >
-          {isHe ? `שלום ${userName},` : `Hello ${userName},`}
+          {t("home.hero.title1")}
         </h1>
-        <h2
-          className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4"
-          style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}
-        >
-          {isHe ? "מה תרצה לבנות היום?" : "What would you like to build today?"}
-        </h2>
         <p className="text-base sm:text-lg" style={{ color: LIGHT_TEXT }}>
-          {isHe
-            ? "בחר כלי מהרשתוח לתחת ותתחיל ליצור תוכן שיווקי, ניתוח עסקי ועוד."
-            : "Choose a tool below and start creating marketing content, business analytics and more."}
+          {t("home.hero.desc")}
         </p>
       </div>
 
-      {/* Feature Cards Grid - Spec Section: Main Feature Cards */}
+      {/* Feature Cards Grid - 5 Card Layout */}
       <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-4 md:gap-5">
           {features.map((feature) => {
             const IconComponent = feature.icon;
             return (
               <button
                 key={feature.id}
                 onClick={() => navigate(feature.path)}
-                className="group relative overflow-hidden rounded-2xl p-6 sm:p-7 text-left transition-all duration-300 hover:shadow-xl active:scale-95"
+                className="group relative overflow-hidden rounded-2xl p-5 sm:p-6 text-left transition-all duration-300 hover:shadow-lg active:scale-95 border border-gray-200 hover:border-transparent"
                 style={{
-                  backgroundColor: feature.bgColor,
+                  backgroundColor: "#FFFFFF",
                   boxShadow: "0 4px 12px rgba(13, 35, 68, 0.1)",
                 }}
               >
                 {/* Hover effect */}
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300"
-                  style={{ backgroundColor: "#FFFFFF" }}
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
+                  style={{ backgroundColor: NAVY }}
                 />
 
                 {/* Content */}
                 <div className="relative z-10">
-                  <div className="flex items-start justify-between mb-4">
+                  <div className="mb-3">
                     <IconComponent
-                      size={32}
+                      size={28}
                       strokeWidth={1.5}
-                      style={{ color: "#FFFFFF" }}
+                      className="text-gray-600 group-hover:text-white transition-colors duration-300"
                     />
                   </div>
                   <h3
-                    className="text-xl sm:text-2xl font-bold mb-2"
-                    style={{ color: "#FFFFFF", fontFamily: "'Montserrat', sans-serif" }}
+                    className="text-lg sm:text-xl font-bold mb-1 text-gray-900 group-hover:text-white transition-colors duration-300"
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                   >
-                    {isHe ? feature.titleHe : feature.titleEn}
+                    {feature.title}
                   </h3>
                   <p
-                    className="text-sm sm:text-base"
-                    style={{ color: "rgba(255, 255, 255, 0.85)" }}
+                    className="text-xs sm:text-sm text-gray-600 group-hover:text-white transition-colors duration-300"
+                    style={{ opacity: 0.85 }}
                   >
-                    {isHe ? feature.descHe : feature.descEn}
+                    {feature.desc}
                   </p>
                 </div>
 
                 {/* Bottom accent line */}
                 <div
-                  className="absolute bottom-0 left-0 right-0 h-1.5 origin-left group-hover:scale-x-100 transform scale-x-0 transition-transform duration-300"
+                  className="absolute bottom-0 left-0 right-0 h-1 origin-left group-hover:scale-x-100 transform scale-x-0 transition-transform duration-300 rounded-bl-2xl rounded-br-2xl"
                   style={{ backgroundColor: "rgba(255, 255, 255, 0.4)" }}
                 />
               </button>
@@ -190,55 +138,110 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Quick Stats Section */}
+      {/* Usage Tracking Section */}
       <div className="max-w-5xl mx-auto mt-12 sm:mt-16">
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6 sm:p-8 rounded-2xl"
-          style={{ backgroundColor: OFF_WHITE }}
-        >
-          <div>
-            <p
-              className="text-3xl sm:text-4xl font-bold"
-              style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {creationsCount}
-            </p>
-            <p className="text-xs sm:text-sm mt-2" style={{ color: LIGHT_TEXT }}>
-              {isHe ? "יצירות" : "Creations"}
+        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200">
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: "'Assistant', sans-serif" }}>
+              {t("dash.plan")}
+            </h3>
+            <p className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
+              {t("home.plan.free")}
             </p>
           </div>
-          <div>
-            <p
-              className="text-3xl sm:text-4xl font-bold"
-              style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {downloadsCount}
-            </p>
-            <p className="text-xs sm:text-sm mt-2" style={{ color: LIGHT_TEXT }}>
-              {isHe ? "הורדות" : "Downloads"}
-            </p>
+
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
+            {/* Progress Circle */}
+            <div className="relative">
+              <svg width="120" height="120" className="transform -rotate-90">
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="50"
+                  stroke="#E5E7EB"
+                  strokeWidth="8"
+                  fill="none"
+                />
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="50"
+                  stroke={NAVY}
+                  strokeWidth="8"
+                  fill="none"
+                  strokeDasharray={`${(totalActions / limit) * 314} 314`}
+                  className="transition-all duration-500"
+                  style={{ filter: "drop-shadow(0 0 8px rgba(0, 31, 63, 0.3))" }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
+                    {totalActions} / {limit}
+                  </div>
+                  <div className="text-xs text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
+                    {t("home.usage.actions")}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Counts */}
+            <div className="flex-1 grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <Wand2 size={16} className="text-gray-600 mr-1" />
+                  <span className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
+                    {t("home.usage.created")}
+                  </span>
+                </div>
+                <div className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
+                  {creationsCount}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <Download size={16} className="text-gray-600 mr-1" />
+                  <span className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
+                    {t("home.usage.downloaded")}
+                  </span>
+                </div>
+                <div className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
+                  {downloadsCount}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <X size={16} className="text-gray-600 mr-1" />
+                  <span className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
+                    {t("home.usage.deletions")}
+                  </span>
+                </div>
+                <div className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
+                  {deletionsCount}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <BarChart3 size={16} className="text-gray-600 mr-1" />
+                  <span className="text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
+                    {isHe ? "פעולות" : "Actions"}
+                  </span>
+                </div>
+                <div className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Assistant', sans-serif" }}>
+                  {totalActions}
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <p
-              className="text-3xl sm:text-4xl font-bold"
-              style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {remainingActions}
-            </p>
-            <p className="text-xs sm:text-sm mt-2" style={{ color: LIGHT_TEXT }}>
-              {isHe ? "קרדיטים נותרו" : "Credits left"}
-            </p>
-          </div>
-          <div>
-            <p
-              className="text-3xl sm:text-4xl font-bold"
-              style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {totalActions}
-            </p>
-            <p className="text-xs sm:text-sm mt-2" style={{ color: LIGHT_TEXT }}>
-              {isHe ? "סך כל הפעולות" : "Total actions"}
-            </p>
+
+          {/* Renewal Date */}
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-600" style={{ fontFamily: "'Heebo', sans-serif" }}>
+            <Clock size={16} />
+            <span>
+              {isHe ? "מתחדש ב-" : "Renews on "}
+              {renewalLabel}
+            </span>
           </div>
         </div>
       </div>

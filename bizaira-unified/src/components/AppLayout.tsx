@@ -88,30 +88,28 @@ const Layout = ({ children }: LayoutProps) => {
           <div className="pointer-events-none absolute inset-0 bg-white/10 backdrop-blur-xl" />
           <div className="relative w-full max-w-2xl rounded-[32px] border border-white/20 bg-white/80 p-8 shadow-[0_28px_80px_-32px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#0B1E3B] mb-3">
-              {isHe ? "מגבלת סטודיו" : "Studio Limit Reached"}
+              {t("app.limit.title")}
             </p>
             <h2 className="text-3xl font-extrabold text-[#0B1E3B] mb-4">
-              {isHe ? "הגעת למגבלת 5 הפעולות החודשית" : "You’ve reached your 5 monthly actions"}
+              {t("app.limit.subtitle")}
             </h2>
             <p className="text-sm leading-7 text-[#334155] mb-6">
-              {isHe
-                ? "הסטודיו הושתק עד לחידוש הקרדיטים או שדרוג ל-PRO. זוהי מגבלת תכנית חכמה, לא תקלה באתר."
-                : "The studio is paused until your credits refresh or you upgrade to PRO. This is a plan feature, not a system failure."}
+              {t("app.limit.desc")}
             </p>
             <div className="rounded-[24px] border border-[#0B1E3B]/10 bg-[#F8F7F4] p-6">
               <p className="text-sm text-[#475569] mb-4">
-                {isHe ? "כדי להמשיך ליצור ללא גבולות, שדרגו לתכנית Pro." : "To continue creating without limits, upgrade to our Pro Plan."}
+                {t("app.limit.upgrade")}
               </p>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center gap-2 text-[#0B1E3B] text-sm font-medium">
                   <Clock size={18} />
-                  <span>{isHe ? "עד לחידוש הקרדיטים" : "Until credit renewal"}</span>
+                  <span>{t("app.limit.renewal")}</span>
                 </div>
                 <button
                   onClick={() => window.location.assign("/pricing")}
                   className="inline-flex items-center justify-center rounded-2xl bg-[#0B1E3B] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#172E52]"
                 >
-                  {isHe ? "שדרג עכשיו" : "Upgrade now"}
+                  {t("app.limit.upgradeBtn")}
                 </button>
               </div>
             </div>

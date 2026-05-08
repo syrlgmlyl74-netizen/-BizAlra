@@ -4,6 +4,8 @@ import { Sparkles, ArrowLeft, ArrowRight, Briefcase, User, Mail, Lock, Wand2, Ba
 import SparkleIcon from "@/components/SparkleIcon";
 import bizairaLogo from "@/assets/bizaira-logo.png";
 import { useI18n } from "@/lib/i18n";
+import { getGuestSession } from "@/lib/guest-session";
+import { safeGetSessionItem } from "@/lib/safe-storage";
 
 const BUSINESS_TYPES_HE = [
   "קוסמטיקה וטיפוח", "עיצוב פנים", "צילום", "מאמנת עסקית",
@@ -30,7 +32,8 @@ const OnboardingPage = () => {
   const NextArrow = lang === "he" ? ArrowRight : ArrowLeft;
 
   const handleFinish = () => {
-    navigate("/dashboard");
+    const isGuest = safeGetSessionItem("onboarding_complete") === "true" && !!getGuestSession();
+    navigate(isGuest ? "/" : "/dashboard");
   };
 
   const features = [
