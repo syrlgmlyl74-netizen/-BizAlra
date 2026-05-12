@@ -25,6 +25,7 @@ import {
   type Creation,
   type CreationType,
 } from "@/lib/creations-store";
+import { getActivityStats } from "@/lib/activity-tracker";
 
 const TYPE_ICON: Record<CreationType, React.ComponentType<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>> = {
   message: MessageSquare,
@@ -37,14 +38,16 @@ const TYPE_ICON: Record<CreationType, React.ComponentType<{ size?: number; strok
 
 const DashboardPage = () => {
   const { t, lang } = useI18n();
-  const { user } = useAuth();  const navigate = useNavigate();  const isHe = lang === "he";
+  const { user, profile } = useAuth();  const navigate = useNavigate();  const isHe = lang === "he";
   const userName = user?.user_metadata?.full_name || (isHe ? "אורח" : "Guest");
 
   const [creations, setCreations] = useState<Creation[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [stats, setStats] = useState(() => getActivityStats());
 
   const refreshData = useCallback(() => {
     setCreations(loadCreations());
+    setStats(getActivityStats());
   }, []);
 
   useEffect(() => {
@@ -142,8 +145,7 @@ const DashboardPage = () => {
     : "Welcome to your personal workspace.";
 
   const MIDNIGHT_NAVY = "#001830";
-  const PEARL_WHITE = "#FAFAFA";
-  const LIGHT_GREY = "#E5E7EB";
+const PEARL_WHITE = "#FAF9F6";
 
   return (
     <div className="min-h-screen pb-16" style={{ backgroundColor: PEARL_WHITE, fontFamily: "Heebo, Assistant, sans-serif" }}>
@@ -168,7 +170,7 @@ const DashboardPage = () => {
             <div className="rounded-[28px] border p-6 shadow-[0_16px_40px_-24px_rgba(0,0,0,0.08)]" style={{ backgroundColor: PEARL_WHITE, borderColor: LIGHT_GREY, color: MIDNIGHT_NAVY }}>
               <p className="text-[11px] uppercase tracking-[0.3em] mb-4 text-gray-500">{isHe ? "סטטוס" : "Status"}</p>
               <p className="text-3xl font-semibold text-gray-900">
-                {isHe ? "חלל פרטי" : "Boutique Private"}
+                {profile?.plan || (isHe ? "תוכנית חינמית" : "Free Plan")}
               </p>
               <p className="mt-3 text-sm leading-6 text-gray-600">
                 {isHe ? "חלל עדין וממותג לעבודה עסקית אישית." : "A delicate, branded space for your personal business work."}
@@ -184,13 +186,13 @@ const DashboardPage = () => {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: MIDNIGHT_NAVY }}>
                 <TrendingUp size={24} style={{ color: PEARL_WHITE }} strokeWidth={1.5} />
               </div>
-              <span className="text-2xl font-semibold">5</span>
+              <span className="text-2xl font-semibold">{profile?.credits_used || 0}</span>
             </div>
-            <p className="text-sm font-light">{isHe ? "פעילויות הושלמו" : "Activities Completed"}</p>
-            <div className="mt-4 w-full rounded-full h-2 bg-gray-200">
-              <div className="h-2 rounded-full bg-gray-900"></div>
+            <p className="text-sm font-light">{isHe ? "קרדיטים בשימוש" : "Credits Used"}</p>
+            <div className="mt-4 w-full rounded-full h-1 bg-gray-200">
+              <div className="h-1 rounded-full bg-gray-900" style={{ width: profile?.credits_total ? `${(profile.credits_used / profile.credits_total) * 100}%` : '0%', backgroundColor: MIDNIGHT_NAVY }}></div>
             </div>
-            <p className="text-xs mt-2 text-gray-500">5/5</p>
+            <p className="text-xs mt-2 text-gray-500">{profile?.credits_used || 0}/{profile?.credits_total || 0}</p>
           </div>
 
           <div className="rounded-[28px] p-6 shadow-[0_18px_45px_-24px_rgba(0,0,0,0.08)] border" style={{ backgroundColor: PEARL_WHITE, borderColor: LIGHT_GREY, color: MIDNIGHT_NAVY }}>
@@ -198,13 +200,13 @@ const DashboardPage = () => {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: MIDNIGHT_NAVY }}>
                 <Sparkles size={24} style={{ color: PEARL_WHITE }} strokeWidth={1.5} />
               </div>
-              <span className="text-2xl font-semibold">0</span>
+              <span className="text-2xl font-semibold">{stats.creationsCount}</span>
             </div>
             <p className="text-sm font-light">{isHe ? "יצירות AI" : "AI Generations"}</p>
-            <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-              <div className="h-2 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_NAVY }}></div>
+            <div className="mt-4 w-full bg-gray-200 rounded-full h-1">
+              <div className="h-1 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_NAVY }}></div>
             </div>
-            <p className="text-xs mt-2 text-gray-500">0/∞</p>
+            <p className="text-xs mt-2 text-gray-500">{stats.creationsCount}/∞</p>
           </div>
 
           <div className="rounded-[28px] p-6 shadow-[0_18px_45px_-24px_rgba(0,0,0,0.08)] border" style={{ backgroundColor: PEARL_WHITE, borderColor: LIGHT_GREY, color: MIDNIGHT_NAVY }}>
@@ -212,13 +214,13 @@ const DashboardPage = () => {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: MIDNIGHT_NAVY }}>
                 <MessageSquare size={24} style={{ color: PEARL_WHITE }} strokeWidth={1.5} />
               </div>
-              <span className="text-2xl font-semibold">0</span>
+              <span className="text-2xl font-semibold">{stats.downloadsCount}</span>
             </div>
             <p className="text-sm font-light">{isHe ? "הודעות נשלחו" : "Messages Sent"}</p>
-            <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-              <div className="h-2 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_NAVY }}></div>
+            <div className="mt-4 w-full bg-gray-200 rounded-full h-1">
+              <div className="h-1 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_NAVY }}></div>
             </div>
-            <p className="text-xs mt-2 text-gray-500">0/∞</p>
+            <p className="text-xs mt-2 text-gray-500">{stats.downloadsCount}/∞</p>
           </div>
 
           <div className="rounded-[28px] p-6 shadow-[0_18px_45px_-24px_rgba(0,0,0,0.08)] border" style={{ backgroundColor: PEARL_WHITE, borderColor: LIGHT_GREY, color: MIDNIGHT_NAVY }}>
@@ -226,13 +228,13 @@ const DashboardPage = () => {
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: MIDNIGHT_NAVY }}>
                 <BarChart3 size={24} style={{ color: PEARL_WHITE }} strokeWidth={1.5} />
               </div>
-              <span className="text-2xl font-semibold">0</span>
+              <span className="text-2xl font-semibold">{stats.deletionsCount}</span>
             </div>
-            <p className="text-sm font-light">{isHe ? "דוחות נוצרו" : "Reports Created"}</p>
-            <div className="mt-4 w-full rounded-full h-2 bg-gray-200">
-              <div className="h-2 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_NAVY }}></div>
+            <p className="text-sm font-light">{isHe ? "מחיקות" : "Deletions"}</p>
+            <div className="mt-4 w-full rounded-full h-1 bg-gray-200">
+              <div className="h-1 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_NAVY }}></div>
             </div>
-            <p className="text-xs mt-2 text-gray-500">0/∞</p>
+            <p className="text-xs mt-2 text-gray-500">{stats.deletionsCount}/∞</p>
           </div>
         </div>
 

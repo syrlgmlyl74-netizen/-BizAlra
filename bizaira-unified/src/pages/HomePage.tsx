@@ -8,8 +8,8 @@ import { safeGetItem, safeSetItem } from "@/lib/safe-storage";
 import { safeGetSessionItem, safeRemoveSessionItem } from "@/lib/safe-storage";
 
 // Luxury Color Palette
-const DEEP_MIDNIGHT_BLUE = "#000810";
-const PEARL_WHITE = "#F9FAFB";
+const DEEP_MIDNIGHT_BLUE = "#001830";
+const PEARL_WHITE = "#FAF9F6";
 
 const HomePage = () => {
   const { lang } = useI18n();
@@ -75,7 +75,7 @@ const HomePage = () => {
       style={{ backgroundColor: PEARL_WHITE }}
     >
       {/* Clean Header with Login Button */}
-      <div className="pt-8 pb-8 max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="pt-12 pb-12 max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex-1">
           <h1
             className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-3"
@@ -102,7 +102,7 @@ const HomePage = () => {
               <button
                 key={feature.id}
                 onClick={() => navigate(feature.path)}
-                className="group relative overflow-hidden rounded-2xl p-5 sm:p-6 text-left transition-all duration-300 hover:shadow-lg active:scale-95 border border-gray-200 hover:border-transparent"
+                className="group relative overflow-hidden rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:shadow-lg active:scale-95 border border-gray-200 hover:border-transparent"
                 style={{
                   backgroundColor: "#FFFFFF",
                   boxShadow: "0 4px 12px rgba(0, 21, 41, 0.1)",
@@ -118,7 +118,7 @@ const HomePage = () => {
                 <div className="relative z-10">
                   <div className="mb-3">
                     <IconComponent
-                      size={28}
+                      size={24}
                       strokeWidth={1.5}
                       className="text-gray-600 group-hover:text-white transition-colors duration-300"
                     />

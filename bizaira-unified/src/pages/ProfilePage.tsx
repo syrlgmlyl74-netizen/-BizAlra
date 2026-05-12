@@ -239,8 +239,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-    </div>
-  );
-};
-
-export default ProfilePage;
