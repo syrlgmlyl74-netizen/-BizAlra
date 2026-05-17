@@ -142,21 +142,21 @@ const DashboardPage = () => {
     : t("dash.personalWorkspace");
   const mainHeader = t("dash.welcomePrompt");
 
-  const MIDNIGHT_BLUE = "#020817";
-  const CREAM = "#FAF9F6";
+  const MIDNIGHT_BLUE = "#001830";
+  const CREAM = "#F5F5DC";
   const PURE_WHITE = "#FFFFFF";
-  const CARD_RADIUS = "60px 60px 52px 52px / 50px 50px 42px 42px";
+  const CARD_RADIUS = "12px";
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-[#020817]" style={{ fontFamily: "Heebo, Assistant, sans-serif" }}>
+    <div className="min-h-screen bg-white text-[#001830]" style={{ fontFamily: "'Inter', 'System-ui', -apple-system, sans-serif" }}>
       <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-6 pt-24 pb-20">
         <div className="w-full max-w-6xl">
           <div className="text-center mb-20">
-            <p className="text-xs uppercase tracking-[0.34em] text-[#020817]/50 mb-6">{t("dash.personalAreaTitle")}</p>
-            <h1 className="mx-auto max-w-3xl text-5xl md:text-6xl font-semibold leading-tight" style={{ color: MIDNIGHT_BLUE }}>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#001830]/40 mb-6" style={{ fontWeight: 500 }}>{t("dash.personalAreaTitle")}</p>
+            <h1 className="mx-auto max-w-3xl text-5xl md:text-6xl font-bold leading-tight" style={{ color: MIDNIGHT_BLUE, fontFamily: "'Inter', sans-serif" }}>
               {mainHeader}
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-9 text-[#020817]/70">
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-9" style={{ color: "#001830", opacity: 0.55, fontWeight: 400 }}>
               {hasName ? `${greetingTitle} ${greetingSubtitle}` : greetingSubtitle}
             </p>
           </div>
@@ -168,21 +168,22 @@ const DashboardPage = () => {
                 <Link
                   key={card.title}
                   to={card.href}
-                  className="group relative overflow-hidden border bg-white text-[#020817] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-[#020817] hover:text-white"
+                  className="group relative overflow-hidden bg-white text-[#001830] transition-all duration-300 ease-in-out hover:-translate-y-1.5"
                   style={{
                     borderRadius: CARD_RADIUS,
-                    borderColor: "rgba(2, 8, 23, 0.08)",
-                    boxShadow: "0 24px 70px -32px rgba(2, 8, 23, 0.18)",
+                    border: "1px solid rgba(0, 24, 48, 0.12)",
+                    padding: "2rem",
+                    boxShadow: "0 1px 3px rgba(0, 24, 48, 0.08)",
                   }}
                 >
-                  <div className="flex h-full flex-col justify-between p-8">
-                    <div className="space-y-6">
-                      <div className="inline-flex h-14 w-14 items-center justify-center rounded-[28px] bg-[#F7F4EE] transition-colors duration-300 ease-in-out group-hover:bg-white/15">
-                        <IconComponent size={22} strokeWidth={1.5} className="text-[#020817] transition-colors duration-300 ease-in-out group-hover:text-white" />
+                  <div className="flex h-full flex-col justify-between">
+                    <div className="space-y-5">
+                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-white transition-colors duration-300" style={{ border: "1px solid rgba(0, 24, 48, 0.1)" }}>
+                        <IconComponent size={20} strokeWidth={1.25} style={{ color: MIDNIGHT_BLUE }} />
                       </div>
                       <div>
-                        <h3 className="text-xl font-semibold leading-tight">{card.title}</h3>
-                        <p className="mt-3 text-sm leading-7 text-[#020817]/75 transition-colors duration-300 ease-in-out group-hover:text-white/90">
+                        <h3 className="text-lg font-bold leading-snug" style={{ color: MIDNIGHT_BLUE, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>{card.title}</h3>
+                        <p className="mt-2 text-sm leading-6" style={{ color: "#001830", opacity: 0.6, fontWeight: 400 }}>
                           {card.description}
                         </p>
                       </div>
@@ -197,65 +198,65 @@ const DashboardPage = () => {
 
       <div className="max-w-7xl mx-auto px-6 pb-20 space-y-10">
         <div className="grid gap-6 lg:grid-cols-4">
-          <div className="border bg-white p-6 shadow-[0_18px_45px_-24px_rgba(2,8,23,0.08)]" style={{ borderRadius: CARD_RADIUS, borderColor: "rgba(2, 8, 23, 0.08)" }}>
+          <div className="bg-white p-5" style={{ borderRadius: CARD_RADIUS, border: "1px solid rgba(0, 24, 48, 0.12)", boxShadow: "0 1px 3px rgba(0, 24, 48, 0.08)" }}>
             <div className="flex items-center justify-between mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#020817]">
-                <TrendingUp size={24} color={PURE_WHITE} strokeWidth={1.5} />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ border: "1px solid rgba(0, 24, 48, 0.1)", backgroundColor: "#F5F5DC" }}>
+                <TrendingUp size={18} color={MIDNIGHT_BLUE} strokeWidth={1.25} />
               </div>
-              <span className="text-2xl font-semibold">{profile?.credits_used || 0}</span>
+              <span className="text-xl font-bold" style={{ color: MIDNIGHT_BLUE, fontFamily: "'Inter', sans-serif" }}>{profile?.credits_used || 0}</span>
             </div>
-            <p className="text-sm font-light">{t("dash.creditsUsed")}</p>
-            <div className="mt-4 w-full rounded-full h-1 bg-[#E8E4DC]">
+            <p className="text-xs font-medium" style={{ color: "#001830", opacity: 0.6 }}>{t("dash.creditsUsed")}</p>
+            <div className="mt-3 w-full rounded-full h-1" style={{ backgroundColor: "rgba(0, 24, 48, 0.08)" }}>
               <div className="h-1 rounded-full" style={{ width: profile?.credits_total ? `${(profile.credits_used / profile.credits_total) * 100}%` : "0%", backgroundColor: MIDNIGHT_BLUE }} />
             </div>
-            <p className="text-xs mt-2 text-[#3B4A66]">{profile?.credits_used || 0}/{profile?.credits_total || 0}</p>
+            <p className="text-xs mt-2" style={{ color: "#001830", opacity: 0.5 }}>{profile?.credits_used || 0}/{profile?.credits_total || 0}</p>
           </div>
 
-          <div className="border bg-white p-6 shadow-[0_18px_45px_-24px_rgba(2,8,23,0.08)]" style={{ borderRadius: CARD_RADIUS, borderColor: "rgba(2, 8, 23, 0.08)" }}>
+          <div className="bg-white p-5" style={{ borderRadius: CARD_RADIUS, border: "1px solid rgba(0, 24, 48, 0.12)", boxShadow: "0 1px 3px rgba(0, 24, 48, 0.08)" }}>
             <div className="flex items-center justify-between mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#020817]">
-                <Wand2 size={24} color={PURE_WHITE} strokeWidth={1.5} />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ border: "1px solid rgba(0, 24, 48, 0.1)", backgroundColor: "#F5F5DC" }}>
+                <Wand2 size={18} color={MIDNIGHT_BLUE} strokeWidth={1.25} />
               </div>
-              <span className="text-2xl font-semibold">{stats.creationsCount}</span>
+              <span className="text-xl font-bold" style={{ color: MIDNIGHT_BLUE, fontFamily: "'Inter', sans-serif" }}>{stats.creationsCount}</span>
             </div>
-            <p className="text-sm font-light">{t("dash.aiGenerations")}</p>
-            <div className="mt-4 w-full rounded-full h-1 bg-[#E8E4DC]">
+            <p className="text-xs font-medium" style={{ color: "#001830", opacity: 0.6 }}>{t("dash.aiGenerations")}</p>
+            <div className="mt-3 w-full rounded-full h-1" style={{ backgroundColor: "rgba(0, 24, 48, 0.08)" }}>
               <div className="h-1 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_BLUE }} />
             </div>
-            <p className="text-xs mt-2 text-[#3B4A66]">{stats.creationsCount}/∞</p>
+            <p className="text-xs mt-2" style={{ color: "#001830", opacity: 0.5 }}>{stats.creationsCount}/∞</p>
           </div>
 
-          <div className="border bg-white p-6 shadow-[0_18px_45px_-24px_rgba(2,8,23,0.08)]" style={{ borderRadius: CARD_RADIUS, borderColor: "rgba(2, 8, 23, 0.08)" }}>
+          <div className="bg-white p-5" style={{ borderRadius: CARD_RADIUS, border: "1px solid rgba(0, 24, 48, 0.12)", boxShadow: "0 1px 3px rgba(0, 24, 48, 0.08)" }}>
             <div className="flex items-center justify-between mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#020817]">
-                <MessageSquare size={24} color={PURE_WHITE} strokeWidth={1.5} />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ border: "1px solid rgba(0, 24, 48, 0.1)", backgroundColor: "#F5F5DC" }}>
+                <MessageSquare size={18} color={MIDNIGHT_BLUE} strokeWidth={1.25} />
               </div>
-              <span className="text-2xl font-semibold">{stats.downloadsCount}</span>
+              <span className="text-xl font-bold" style={{ color: MIDNIGHT_BLUE, fontFamily: "'Inter', sans-serif" }}>{stats.downloadsCount}</span>
             </div>
-            <p className="text-sm font-light">{t("dash.messagesSent")}</p>
-            <div className="mt-4 w-full rounded-full h-1 bg-[#E8E4DC]">
+            <p className="text-xs font-medium" style={{ color: "#001830", opacity: 0.6 }}>{t("dash.messagesSent")}</p>
+            <div className="mt-3 w-full rounded-full h-1" style={{ backgroundColor: "rgba(0, 24, 48, 0.08)" }}>
               <div className="h-1 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_BLUE }} />
             </div>
-            <p className="text-xs mt-2 text-[#3B4A66]">{stats.downloadsCount}/∞</p>
+            <p className="text-xs mt-2" style={{ color: "#001830", opacity: 0.5 }}>{stats.downloadsCount}/∞</p>
           </div>
 
-          <div className="border bg-white p-6 shadow-[0_18px_45px_-24px_rgba(2,8,23,0.08)]" style={{ borderRadius: CARD_RADIUS, borderColor: "rgba(2, 8, 23, 0.08)" }}>
+          <div className="bg-white p-5" style={{ borderRadius: CARD_RADIUS, border: "1px solid rgba(0, 24, 48, 0.12)", boxShadow: "0 1px 3px rgba(0, 24, 48, 0.08)" }}>
             <div className="flex items-center justify-between mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#020817]">
-                <BarChart3 size={24} color={PURE_WHITE} strokeWidth={1.5} />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ border: "1px solid rgba(0, 24, 48, 0.1)", backgroundColor: "#F5F5DC" }}>
+                <BarChart3 size={18} color={MIDNIGHT_BLUE} strokeWidth={1.25} />
               </div>
-              <span className="text-2xl font-semibold">{stats.deletionsCount}</span>
+              <span className="text-xl font-bold" style={{ color: MIDNIGHT_BLUE, fontFamily: "'Inter', sans-serif" }}>{stats.deletionsCount}</span>
             </div>
-            <p className="text-sm font-light">{t("dash.deletions")}</p>
-            <div className="mt-4 w-full rounded-full h-1 bg-[#E8E4DC]">
+            <p className="text-xs font-medium" style={{ color: "#001830", opacity: 0.6 }}>{t("dash.deletions")}</p>
+            <div className="mt-3 w-full rounded-full h-1" style={{ backgroundColor: "rgba(0, 24, 48, 0.08)" }}>
               <div className="h-1 rounded-full" style={{ width: "0%", backgroundColor: MIDNIGHT_BLUE }} />
             </div>
-            <p className="text-xs mt-2 text-[#3B4A66]">{stats.deletionsCount}/∞</p>
+            <p className="text-xs mt-2" style={{ color: "#001830", opacity: 0.5 }}>{stats.deletionsCount}/∞</p>
           </div>
         </div>
 
         <div className="text-center">
-          <button className="px-8 py-4 rounded-[20px] text-white font-light text-lg transition-all duration-300 ease-in-out hover:scale-105 hover:-translate-y-1" style={{ backgroundColor: MIDNIGHT_BLUE, boxShadow: "0 12px 32px -8px rgba(2, 8, 23, 0.24)" }}>
+          <button className="px-8 py-4 rounded-lg text-white font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-1" style={{ backgroundColor: MIDNIGHT_BLUE, boxShadow: "0 2px 8px rgba(0, 24, 48, 0.16)", fontFamily: "'Inter', sans-serif", letterSpacing: "0.01em" }}>
             {t("dash.upgradeNow")}
           </button>
         </div>
