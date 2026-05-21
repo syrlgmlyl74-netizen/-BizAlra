@@ -261,9 +261,6 @@ const ImageStudioPage = () => {
                   </div>
                 ) : (
                   <div className="text-center">
-                    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[24px] bg-[#E2E8F0] text-[#475569]">
-                      <Paintbrush size={32} />
-                    </div>
                     <p className="text-lg font-semibold text-[#000B18] mb-2">
                       {isHe ? "היצירה שלך תוצג כאן" : "Your creation will appear here"}
                     </p>

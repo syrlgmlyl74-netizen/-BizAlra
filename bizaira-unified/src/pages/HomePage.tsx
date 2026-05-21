@@ -31,13 +31,6 @@ const HomePage = () => {
   // Feature rows for premium executive navigation
   const features = [
     {
-      id: 1,
-      icon: Wand2,
-      title: isHe ? "התחל ליצור" : "Start creating",
-      desc: isHe ? "צור תוכן שיווקי וניהולי בזמן אמת" : "Create marketing and business content in real time",
-      path: "/create",
-    },
-    {
       id: 2,
       icon: User,
       title: isHe ? "אזור אישי" : "Profile area",
@@ -52,11 +45,11 @@ const HomePage = () => {
       path: "/create/analytics",
     },
     {
-      id: 4,
-      icon: Crown,
-      title: isHe ? "שדרוג לחבילה" : "Upgrade plan",
-      desc: isHe ? "פתח גישה לכל הכלים והיצירות ללא הגבלה" : "Unlock all tools and unlimited creations",
-      path: "/pricing",
+      id: 6,
+      icon: BarChart3,
+      title: isHe ? "סטודיו תמונות" : "Image studio",
+      desc: isHe ? "צור תמונות מוצר ותכנים חזותיים בקלות" : "Create product images and visual content with ease",
+      path: "/create/image-studio",
     },
     {
       id: 5,
@@ -66,11 +59,11 @@ const HomePage = () => {
       path: "/support",
     },
     {
-      id: 6,
-      icon: BarChart3,
-      title: isHe ? "סטודיו תמונות" : "Image studio",
-      desc: isHe ? "צור תמונות מוצר ותכנים חזותיים בקלות" : "Create product images and visual content with ease",
-      path: "/create/image-studio",
+      id: 4,
+      icon: Crown,
+      title: isHe ? "שדרוג לחבילה" : "Upgrade plan",
+      desc: isHe ? "פתח גישה לכל הכלים והיצירות ללא הגבלה" : "Unlock all tools and unlimited creations",
+      path: "/pricing",
     },
   ];
 
@@ -111,7 +104,7 @@ const HomePage = () => {
 
       {/* Executive feature rows */}
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
           {features.map((feature) => {
             const IconComponent = feature.icon;
 
@@ -120,12 +113,9 @@ const HomePage = () => {
                 key={feature.id}
                 type="button"
                 onClick={() => navigate(feature.path)}
-                className="group flex h-[28rem] w-full flex-col justify-between overflow-hidden rounded-2xl border border-[#DEE2E6] bg-transparent p-6 text-left transition-all duration-300 ease-in-out hover:bg-[#000B18]"
+                className={`group flex h-[20rem] w-full flex-col justify-between overflow-hidden rounded-2xl border border-[#DEE2E6] bg-transparent p-4 ${isHe ? "text-right" : "text-left"} transition-all duration-300 ease-in-out hover:bg-[#000B18]`}
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[#DEE2E6] bg-transparent text-[#001830] transition-colors duration-300 group-hover:border-transparent group-hover:bg-white/5 group-hover:text-white">
-                    <IconComponent size={28} className="text-[#001830] transition-all duration-300 group-hover:text-white" />
-                  </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold tracking-tight text-[#001830] transition-all duration-300 group-hover:text-white">
                       {feature.title}

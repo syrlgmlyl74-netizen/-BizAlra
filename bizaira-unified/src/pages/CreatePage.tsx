@@ -97,21 +97,15 @@ const CreatePage = () => {
               style={{ animationDelay: `${i * 55}ms`, minHeight: "124px" }}
             >
               <div className="flex items-center gap-4 px-5 py-5 h-full">
-                <div className={`flex items-center gap-4 ${isHe ? "flex-row-reverse" : "flex-row"}`}>
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-[#F1F5F9] transition-colors duration-300 group-hover:bg-[#000a1a]">
-                    <IconComp size={24} strokeWidth={1.5} className="text-[#000810] transition-colors duration-300 group-hover:text-white" />
-                  </div>
-
-                  <div className={isHe ? "text-right" : "text-left"}>
-                    <div className="text-lg font-semibold leading-snug text-[#000810] transition-colors duration-300 group-hover:text-white">
-                      {t(tool.titleKey)}
-                    </div>
-                    <div className="text-sm leading-relaxed mt-1 text-[#6B7280] transition-colors duration-300 group-hover:text-slate-300">
-                      {t(tool.descKey)}
+                    <div className={`flex-1 ${isHe ? "text-right" : "text-left"}`}>
+                      <div className="text-lg font-semibold leading-snug text-[#000810] transition-colors duration-300 group-hover:text-white">
+                        {t(tool.titleKey)}
+                      </div>
+                      <div className="text-sm leading-relaxed mt-1 text-[#6B7280] transition-colors duration-300 group-hover:text-slate-300">
+                        {t(tool.descKey)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
             </button>
           );
         })}

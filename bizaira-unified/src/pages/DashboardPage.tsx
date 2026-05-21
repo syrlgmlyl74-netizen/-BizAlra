@@ -74,13 +74,13 @@ const DashboardPage = () => {
           </div>
         </section>
 
-        <section className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="mt-12 grid grid-cols-1 md:grid-cols-5 gap-6">
           {cards.map((card) => (
             <button
               key={card.id}
               type="button"
               onClick={() => navigate(card.path)}
-              className={`group flex h-[22rem] w-full flex-col justify-between overflow-hidden rounded-[24px] border bg-white p-6 text-left transition-all duration-300 ${card.featured ? "border-[#000B18] shadow-[0_16px_40px_rgba(0,11,24,0.12)]" : "border-[#E2E8F0] shadow-[0_10px_25px_rgba(0,11,24,0.06)]"} hover:border-transparent hover:bg-[#000B18] hover:text-white`}
+              className={`group flex h-[18rem] w-full flex-col justify-between overflow-hidden rounded-[24px] border bg-white p-4 text-right transition-all duration-300 ${card.featured ? "border-[#000B18] shadow-[0_16px_40px_rgba(0,11,24,0.12)]" : "border-[#E2E8F0] shadow-[0_10px_25px_rgba(0,11,24,0.06)]"} hover:border-transparent hover:bg-[#000B18] hover:text-white`}
             >
               <div className="space-y-4">
                 {card.featured && (
