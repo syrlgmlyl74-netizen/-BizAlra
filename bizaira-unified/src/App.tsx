@@ -1,18 +1,20 @@
-import { useState, useEffect } from "react";
+import { Component, useEffect, useState, type ReactNode } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AppLayout from "@/components/AppLayout";
+import CookieConsentPopup from "@/components/CookieConsentPopup";
+import AccessibilityWidget from "@/components/AccessibilityWidget";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/hooks/useAuth";
-import AppLayout from "@/components/AppLayout";
-import CookieConsentPopup from "@/components/CookieConsentPopup";
+import { CookieConsent, getCookieConsent, loadTrackingScripts, setCookieConsent } from "@/lib/cookie-consent";
+import { hardResetApp } from "@/lib/safe-storage";
 import LandingPage from "./pages/LandingPage";
 import CreatePage from "./pages/CreatePage";
 import JournalPage from "./pages/JournalPage";
-
 import ProductPhotoStudioPage from "./pages/ProductPhotoStudioPage";
 import AIMessagesPage from "./pages/AIMessagesPage";
 import BusinessAnalyticsPage from "./pages/BusinessAnalyticsPage";
@@ -27,12 +29,11 @@ import ProfilePage from "./pages/ProfilePage";
 import PricingPage from "./pages/PricingPage";
 import SupportPage from "./pages/SupportPage";
 import VideoStudioPage from "./pages/VideoStudioPage";
-
+import AccountSettingsPage from "./pages/AccountSettingsPage";
 import NotFound from "./pages/NotFound";
 import AccessibilityStatement from "./pages/AccessibilityStatement";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
-
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminPagesPage from "./pages/admin/AdminPagesPage";
 import AdminMediaPage from "./pages/admin/AdminMediaPage";
@@ -41,11 +42,46 @@ import AdminAIPage from "./pages/admin/AdminAIPage";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 
-import { CookieConsent, getCookieConsent, loadTrackingScripts, setCookieConsent } from "@/lib/cookie-consent";
-import { hardResetApp } from "@/lib/safe-storage";
-import AccessibilityWidget from "@/components/AccessibilityWidget";
-
 const queryClient = new QueryClient();
+
+class AppErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error?: Error }> {
+  state = { hasError: false, error: undefined };
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: { componentStack: string }) {
+    console.error("App error boundary caught:", error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-white text-[#000B18] p-10" dir="ltr">
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-[#E5E8EB] bg-[#FAF9FC] p-10 shadow-[0_24px_64px_rgba(0,11,24,0.1)]">
+            <p className="text-sm uppercase tracking-[0.3em] text-[#64748B]">Unexpected error</p>
+            <h1 className="mt-4 text-3xl font-semibold text-[#000B18]">Something went wrong</h1>
+            <p className="mt-3 text-base leading-7 text-[#475569]">
+              The app encountered an unexpected issue. Please refresh the page or contact support if this continues.
+            </p>
+            <div className="mt-8 flex gap-3">
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="rounded-3xl bg-[#000B18] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#001830]"
+              >
+                Reload app
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const App = () => {
   const [showConsent, setShowConsent] = useState(false);
@@ -88,8 +124,9 @@ const App = () => {
             <AuthProvider>
               <Toaster />
               <Sonner />
-              <BrowserRouter>
-                <Routes>
+              <AppErrorBoundary>
+                <BrowserRouter>
+                  <Routes>
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/onboarding-welcome" element={<OnboardingWelcome />} />
                   <Route path="/onboarding" element={<OnboardingPage />} />
@@ -104,7 +141,6 @@ const App = () => {
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/create" element={<AppLayout><CreatePage /></AppLayout>} />
                   <Route path="/journal" element={<AppLayout><JournalPage /></AppLayout>} />
-                  
                   <Route path="/create/product-photos" element={<AppLayout><ProductPhotoStudioPage /></AppLayout>} />
                   <Route path="/create/messages" element={<AppLayout><AIMessagesPage /></AppLayout>} />
                   <Route path="/create/analytics" element={<AppLayout><BusinessAnalyticsPage /></AppLayout>} />
@@ -114,6 +150,7 @@ const App = () => {
                   <Route path="/create/video" element={<AppLayout><VideoStudioPage /></AppLayout>} />
                   <Route path="/dashboard" element={<AppLayout><DashboardPage /></AppLayout>} />
                   <Route path="/profile" element={<AppLayout><ProfilePage /></AppLayout>} />
+                  <Route path="/settings" element={<AppLayout><AccountSettingsPage /></AppLayout>} />
                   <Route path="/pricing" element={<AppLayout><PricingPage /></AppLayout>} />
                   <Route path="/support" element={<AppLayout><SupportPage /></AppLayout>} />
                   <Route path="/accessibility" element={<AppLayout><AccessibilityStatement /></AppLayout>} />
@@ -123,6 +160,7 @@ const App = () => {
                 </Routes>
                 {showConsent && <CookieConsentPopup onConsent={handleConsent} />}
               </BrowserRouter>
+            </AppErrorBoundary>
             </AuthProvider>
           </I18nProvider>
         </TooltipProvider>

@@ -1,13 +1,11 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/lib/i18n";
-import { getActivityStats } from "@/lib/activity-tracker";
-import { UserCircle2, Headphones, CreditCard, Settings, Lock, X } from "lucide-react";
+import { UserCircle2, Headphones, CreditCard, Settings, Lock } from "lucide-react";
 
 const ProfilePage = () => {
-  const { lang, t } = useI18n();
+  const { lang } = useI18n();
   const isHe = lang === "he";
   const navigate = useNavigate();
   const { profile } = useAuth();
@@ -18,19 +16,6 @@ const ProfilePage = () => {
   const remainingCredits = Math.max(0, totalCredits - usedCredits);
   const isPro = profile?.plan === "pro";
   const isBlocked = !isPro && remainingCredits <= 0;
-
-  const [showSettings, setShowSettings] = useState(false);
-  const [editName, setEditName] = useState(profile?.full_name ?? "");
-  const [editAudience, setEditAudience] = useState(profile?.target_audience ?? "");
-  const [editBusinessGoals, setEditBusinessGoals] = useState(profile?.business_goals ?? "");
-  const [savingSettings, setSavingSettings] = useState(false);
-  const [settingsMessage, setSettingsMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    setEditName(profile?.full_name ?? "");
-    setEditAudience(profile?.target_audience ?? "");
-    setEditBusinessGoals(profile?.business_goals ?? "");
-  }, [profile]);
 
   const resetDate = useMemo(() => {
     if (profile?.last_renewal_at) {
@@ -45,32 +30,6 @@ const ProfilePage = () => {
     : isHe
     ? "תאריך לא זמין"
     : "Date unavailable";
-
-  const handleSaveSettings = async () => {
-    if (!profile) return;
-    setSavingSettings(true);
-    setSettingsMessage(null);
-
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          full_name: editName,
-          target_audience: editAudience,
-          business_goals: editBusinessGoals,
-        })
-        .eq("user_id", profile.user_id);
-
-      if (error) throw error;
-      setSettingsMessage(isHe ? "השינויים נשמרו בהצלחה." : "Settings saved successfully.");
-      setShowSettings(false);
-    } catch (err: any) {
-      console.error("Profile update failed:", err);
-      setSettingsMessage(isHe ? "שמירת השינויים נכשלה. נסה שוב." : "Saving settings failed. Please try again.");
-    } finally {
-      setSavingSettings(false);
-    }
-  };
 
   const planLabel = isPro ? "PRO" : isHe ? "תוכנית חינם" : "Free Plan";
   const studioStatus = isPro
@@ -89,19 +48,17 @@ const ProfilePage = () => {
   const creditPercent = isPro ? 100 : Math.round((remainingCredits / Math.max(totalCredits, 1)) * 100);
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-[#001830]" dir={isHe ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-[#FAF9F6] text-[#000B18]" dir={isHe ? "rtl" : "ltr"}>
       {isBlocked && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#001830]/15 px-4 py-6 backdrop-blur-sm">
-          <div className="absolute inset-0 bg-[#001830]/10" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#000B18]/10 px-4 py-6 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-[#000B18]/10" />
           <div className="relative w-full max-w-3xl rounded-[28px] border border-slate-200 bg-white/95 p-8 shadow-[0_28px_80px_rgba(0,24,48,0.18)]">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#001830] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-white">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#000B18] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-white">
               <Lock size={16} />
               {isHe ? "הסטודיו נעול" : "Studio blocked"}
             </div>
-            <h2 className="mt-5 text-3xl font-semibold text-[#001830]">
-              {isHe
-                ? "ניצלת את כל הקרדיטים החודשיים"
-                : "You’ve used up your monthly credits"}
+            <h2 className="mt-5 text-3xl font-semibold text-[#000B18]">
+              {isHe ? "ניצלת את כל הקרדיטים החודשיים" : "You’ve used up your monthly credits"}
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
               {isHe
@@ -115,110 +72,9 @@ const ProfilePage = () => {
               <button
                 type="button"
                 onClick={() => navigate("/pricing")}
-                className="rounded-xl bg-[#001830] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#03172c]"
+                className="rounded-xl bg-[#000B18] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#001830]"
               >
                 {isHe ? "שדרג עכשיו" : "Upgrade now"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showSettings && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-[#001830]/15 px-4 py-6 backdrop-blur-sm">
-          <div className="absolute inset-0 bg-[#001830]/10" onClick={() => setShowSettings(false)} />
-          <div className="relative w-full max-w-2xl rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_28px_80px_rgba(0,24,48,0.18)]">
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setShowSettings(false)}
-              className="absolute top-6 right-6 sm:top-8 sm:right-8 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 transition-colors hover:bg-slate-200"
-            >
-              <X size={20} className="text-[#001830]" />
-            </button>
-
-            {/* Header */}
-            <div className="mb-8">
-              <h2 className="text-3xl font-semibold text-[#001830]">
-                {isHe ? "ערוך פרופיל" : "Edit profile"}
-              </h2>
-              <p className="mt-2 text-sm text-slate-600">
-                {isHe ? "עדכן את המידע החשוב שלך" : "Update your important information"}
-              </p>
-            </div>
-
-            {/* Form Fields */}
-            <div className="space-y-6">
-              {/* Full Name */}
-              <div>
-                <label className="block text-sm font-semibold text-[#000B18] mb-2">
-                  {isHe ? "שם מלא" : "Full name"}
-                </label>
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  placeholder={isHe ? "השם שלך" : "Your name"}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#001830] placeholder:text-slate-400 focus:border-[#000B18] focus:outline-none focus:ring-2 focus:ring-[#000B18]/20 transition-all"
-                  dir={isHe ? "rtl" : "ltr"}
-                />
-              </div>
-
-              {/* Target Audience */}
-              <div>
-                <label className="block text-sm font-semibold text-[#000B18] mb-2">
-                  {isHe ? "קהל יעד" : "Target audience"}
-                </label>
-                <input
-                  type="text"
-                  value={editAudience}
-                  onChange={(e) => setEditAudience(e.target.value)}
-                  placeholder={isHe ? "לדוגמה: עסקים קטנים, סטארטאפים" : "E.g., small businesses, startups"}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#001830] placeholder:text-slate-400 focus:border-[#000B18] focus:outline-none focus:ring-2 focus:ring-[#000B18]/20 transition-all"
-                  dir={isHe ? "rtl" : "ltr"}
-                />
-              </div>
-
-              {/* Business Goals */}
-              <div>
-                <label className="block text-sm font-semibold text-[#000B18] mb-2">
-                  {isHe ? "יעדי עסק" : "Business goals"}
-                </label>
-                <textarea
-                  value={editBusinessGoals}
-                  onChange={(e) => setEditBusinessGoals(e.target.value)}
-                  placeholder={isHe ? "תאר את היעדים העיקריים שלך" : "Describe your main business goals"}
-                  rows={4}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#001830] placeholder:text-slate-400 focus:border-[#000B18] focus:outline-none focus:ring-2 focus:ring-[#000B18]/20 transition-all resize-none"
-                  dir={isHe ? "rtl" : "ltr"}
-                />
-              </div>
-
-              {/* Status Message */}
-              {settingsMessage && (
-                <div className={`rounded-lg px-4 py-3 text-sm ${settingsMessage.includes("בהצלחה") || settingsMessage.includes("successfully") ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>
-                  {settingsMessage}
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-end sm:gap-4">
-              <button
-                type="button"
-                onClick={() => setShowSettings(false)}
-                className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-[#001830] transition hover:bg-slate-50"
-                disabled={savingSettings}
-              >
-                {isHe ? "ביטול" : "Cancel"}
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveSettings}
-                disabled={savingSettings}
-                className="rounded-xl bg-[#000B18] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#001830] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {savingSettings ? (isHe ? "שומר..." : "Saving...") : (isHe ? "שמור שינויים" : "Save changes")}
               </button>
             </div>
           </div>
@@ -230,10 +86,7 @@ const ProfilePage = () => {
           <div className="max-w-4xl">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h1
-                  className="text-4xl sm:text-5xl font-semibold tracking-tight text-[#001830] text-right"
-                  style={{ fontFamily: "Inter, system-ui, sans-serif", letterSpacing: "-0.03em" }}
-                >
+                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-[#000B18] text-right" style={{ fontFamily: "Inter, system-ui, sans-serif", letterSpacing: "-0.03em" }}>
                   {isHe ? "היי, מה תרצה לבנות היום?" : "Hey, what would you like to build today?"}
                 </h1>
                 <p className="mt-3 max-w-2xl text-base text-slate-600">
@@ -244,12 +97,27 @@ const ProfilePage = () => {
               </div>
               <button
                 type="button"
-                onClick={() => setShowSettings(true)}
-                className="inline-flex items-center gap-2 rounded-3xl border border-[#E0E0E0] bg-white px-4 py-3 text-sm font-semibold text-[#001830] shadow-sm transition hover:border-[#000B18] hover:text-[#000B18]"
+                onClick={() => navigate("/settings")}
+                className="inline-flex items-center gap-2 rounded-3xl border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#000B18] shadow-sm transition hover:border-transparent hover:bg-[#000B18] hover:text-white"
               >
                 <Settings size={18} />
-                {isHe ? "ערוך פרופיל" : "Edit profile"}
+                {isHe ? "הגדרות" : "Settings"}
               </button>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-[28px] border border-[#E5E8F0] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]">
+                <p className="text-xs uppercase tracking-[0.26em] text-[#64748B]">{isHe ? "שם מלא" : "Full name"}</p>
+                <p className="mt-4 text-lg font-semibold text-[#000B18]">{userName}</p>
+              </div>
+              <div className="rounded-[28px] border border-[#E5E8F0] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]">
+                <p className="text-xs uppercase tracking-[0.26em] text-[#64748B]">{isHe ? "אימייל" : "Email"}</p>
+                <p className="mt-4 text-lg font-semibold text-[#000B18]">{profile?.email ?? (isHe ? "לא סופק אימייל" : "No email available")}</p>
+              </div>
+              <div className="rounded-[28px] border border-[#E5E8F0] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]">
+                <p className="text-xs uppercase tracking-[0.26em] text-[#64748B]">{isHe ? "סיסמה" : "Password"}</p>
+                <p className="mt-4 text-lg font-semibold text-[#000B18]">••••••••••</p>
+              </div>
             </div>
           </div>
         </header>
@@ -257,17 +125,19 @@ const ProfilePage = () => {
         <section className="rounded-[28px] border border-gray-100 bg-white p-8 shadow-sm">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#2D3748]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#000B18]">
                 <UserCircle2 size={30} />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.26em] text-slate-500">{planLabel}</p>
-                <h2 className="mt-2 text-2xl font-semibold text-[#001830]">{isHe ? `ברוכה השבה, ${userName}` : `Welcome back, ${userName}`}</h2>
+                <p className="text-xs uppercase tracking-[0.26em] text-[#000B18]">{planLabel}</p>
+                <h2 className="mt-2 text-2xl font-semibold text-[#000B18]">
+                  {isHe ? `ברוכה השבה, ${userName}` : `Welcome back, ${userName}`}
+                </h2>
                 <p className="mt-1 text-sm text-slate-600">{studioStatus}</p>
               </div>
             </div>
             <div className="space-y-3 text-right">
-              <p className="text-sm font-semibold text-[#001830]">
+              <p className="text-sm font-semibold text-[#000B18]">
                 {isHe ? `נשארים קרדיטים: ${remainingCredits} / ${totalCredits}` : `Credits remaining: ${remainingCredits} / ${totalCredits}`}
               </p>
               <p className="text-sm text-slate-500">{isHe ? `מתחדש בתאריך: ${formattedResetDate}` : `Renews on: ${formattedResetDate}`}</p>
@@ -275,12 +145,12 @@ const ProfilePage = () => {
           </div>
 
           <div className="mt-8">
-            <div className="mb-3 flex items-center justify-between gap-4 text-sm font-medium text-[#001830]">
+            <div className="mb-3 flex items-center justify-between gap-4 text-sm font-medium text-[#000B18]">
               <span>{isHe ? "סטטוס קרדיטים" : "Credit balance"}</span>
               <span>{`${creditPercent}%`}</span>
             </div>
             <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-              <div className="h-full rounded-full bg-[#001830] transition-all duration-300" style={{ width: `${creditPercent}%` }} />
+              <div className="h-full rounded-full bg-[#000B18] transition-all duration-300" style={{ width: `${creditPercent}%` }} />
             </div>
           </div>
 
@@ -297,7 +167,7 @@ const ProfilePage = () => {
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.26em] text-slate-500">{isHe ? "כלי ניהול מהירים" : "Quick actions"}</p>
-              <h3 className="mt-2 text-xl font-semibold text-[#001830]">{isHe ? "ניהול חשבון וסטודיו" : "Account & studio controls"}</h3>
+              <h3 className="mt-2 text-xl font-semibold text-[#000B18]">{isHe ? "ניהול חשבון וסטודיו" : "Account & studio controls"}</h3>
             </div>
           </div>
 
@@ -305,26 +175,26 @@ const ProfilePage = () => {
             <button
               type="button"
               onClick={() => navigate("/support")}
-              className="group flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-4 text-sm font-medium text-[#2D3748] transition-all duration-300 hover:bg-[#001830] hover:text-white"
+              className="group flex items-center justify-between rounded-xl border border-[#E2E8F0] bg-gray-50 px-4 py-4 text-sm font-medium text-[#000B18] transition-all duration-300 hover:bg-[#000B18] hover:text-white"
             >
               <span>{isHe ? "תמיכה" : "Support"}</span>
-              <Headphones size={20} className="text-[#2D3748] transition-colors duration-300 group-hover:text-white" />
+              <Headphones size={20} className="transition-colors duration-300" />
             </button>
             <button
               type="button"
               onClick={() => navigate("/pricing")}
-              className="group flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-4 text-sm font-medium text-[#2D3748] transition-all duration-300 hover:bg-[#001830] hover:text-white"
+              className="group flex items-center justify-between rounded-xl border border-[#E2E8F0] bg-gray-50 px-4 py-4 text-sm font-medium text-[#000B18] transition-all duration-300 hover:bg-[#000B18] hover:text-white"
             >
               <span>{isHe ? "ניהול מנוי" : "Manage subscription"}</span>
-              <CreditCard size={20} className="text-[#2D3748] transition-colors duration-300 group-hover:text-white" />
+              <CreditCard size={20} className="transition-colors duration-300" />
             </button>
             <button
               type="button"
-              onClick={() => setShowSettings(true)}
-              className="group flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-4 text-sm font-medium text-[#2D3748] transition-all duration-300 hover:bg-[#001830] hover:text-white"
+              onClick={() => navigate("/settings")}
+              className="group flex items-center justify-between rounded-xl border border-[#E2E8F0] bg-gray-50 px-4 py-4 text-sm font-medium text-[#000B18] transition-all duration-300 hover:bg-[#000B18] hover:text-white"
             >
               <span>{isHe ? "הגדרות" : "Settings"}</span>
-              <Settings size={20} className="text-[#2D3748] transition-colors duration-300 group-hover:text-white" />
+              <Settings size={20} className="transition-colors duration-300" />
             </button>
           </div>
         </section>
@@ -332,5 +202,14 @@ const ProfilePage = () => {
     </div>
   );
 };
+
+const getActivityStats = () => ({
+  limit: 20,
+  totalActions: 12,
+  nextRenewalDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+  creationsCount: 11,
+  downloadsCount: 5,
+  generalCount: 31,
+});
 
 export default ProfilePage;

@@ -1,4 +1,3 @@
-import { Check, Rocket } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 const PricingPage = () => {
@@ -6,75 +5,65 @@ const PricingPage = () => {
 
   const plans = [
     {
-      name: "Free",
+      name: lang === "he" ? "חינם" : "Free",
       price: lang === "he" ? "₪0" : "$0",
       priceLabel: t("pricing.startFree"),
       highlight: false,
       features: [
-        "5 AI creations / month",
-        "Basic access to selected tools",
-        "No watermark on print-ready content",
-        "Fast onboarding support",
+        "Controlled allocation of up to 5 AI production cycles per month",
+        "Basic access to the business management tools and interfaces",
+        "A streamlined workflow for professional launch preparation",
       ],
       featuresHe: [
-        "5 יצירות AI בחודש",
-        "גישה בסיסית לכלים הנבחרים",
-        "ללא סימני מים בתוכן להורדה",
-        "תמיכה מהירה בהטמעה",
+        "הקצאה מבוקרת של עד 5 מחזורי הפקה חודשיים בטכנולוגיית AI",
+        "גישה בסיסית למערך הכלים ולממשקי הניהול העסקיים",
+        "ממשק מקצועי לניהול תהליכים ראשוניים",
       ],
     },
     {
-      name: "Pro",
-      price: lang === "he" ? "₪29" : "$9",
+      name: lang === "he" ? "Pro" : "Pro",
+      price: lang === "he" ? "₪29" : "$29",
       period: lang === "he" ? "/ לחודש" : "/ month",
       priceLabel: t("pricing.upgradeNow"),
       highlight: true,
       features: [
-        "Unlimited AI creations",
-        "Premium output quality",
-        "No watermark",
-        "Full AI studio access",
-        "Priority support",
+        "Unlimited AI-driven creative production cycles",
+        "Advanced rendering engine with ultimate resolution fidelity",
+        "Full integration with prospective pricing and goal-driven time management",
       ],
       featuresHe: [
-        "יצירות AI ללא הגבלה",
-        "איכות פלט פרימיום",
-        "ללא סימני מים",
-        "גישה מלאה לסטודיו AI",
-        "תמיכה בעדיפות גבוהה",
+        "הפקת תכנים ומחזורי יצירה מבוססי AI ללא הגבלה נפחית",
+        "מנוע עיבוד ורנדור מתקדם ברזולוציה אולטימטיבית",
+        "אינטגרציה מלאה לכלי תמחור פרוספקטיביים וניהול זמן מבוסס יעדים",
       ],
     },
     {
-      name: "Business",
-      price: lang === "he" ? "₪59" : "$19",
+      name: lang === "he" ? "Business" : "Business",
+      price: lang === "he" ? "₪59" : "$59",
       period: lang === "he" ? "/ לחודש" : "/ month",
       priceLabel: t("pricing.upgradeNow"),
       highlight: false,
       features: [
-        "Everything in Pro",
-        "Executive business analytics",
-        "Smart pricing and time planning",
-        "Priority AI processing",
-        "Multiple versions per creation",
+        "Priority server routing for minimal latency and real-time processing",
+        "Expanded workspace for multi-client, multi-brand professional studio management",
+        "AI-driven financial analysis, business analytics and predictive reporting",
       ],
       featuresHe: [
-        "הכל ב-Pro",
-        "ניתוח עסקי ברמה ניהולית",
-        "תמחור וניהול זמן חכמים",
-        "עדיפות בעיבוד AI",
-        "גרסאות מרובות לכל יצירה",
+        "ניתוב שרתים בעדיפות עליונה (זמן תגובה אפסי ועיבוד בזמן אמת)",
+        "סביבת עבודה מורחבת לניהול ריבוי לקוחות, מותגים וסטודיו מקצועי",
+        "מודול ניתוח פיננסי, אנליטיקה עסקית ודוחות חזויים מבוססי בינה מלאכותית",
       ],
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white text-[#001830]" dir={lang === "he" ? "rtl" : "ltr"} style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen bg-white text-[#000B18]" dir={lang === "he" ? "rtl" : "ltr"}>
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-12 max-w-3xl">
-          <h1 className="text-3xl font-semibold tracking-tight text-[#001830] sm:text-4xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-[#000B18] sm:text-5xl">
             {t("pricing.title")}
           </h1>
-          <p className="mt-4 text-base leading-7 text-[#475569] sm:text-lg">
+          <p className="mt-4 text-lg leading-8 text-[#475569] sm:text-xl">
             {t("pricing.subtitle")}
           </p>
         </div>
@@ -86,55 +75,47 @@ const PricingPage = () => {
             return (
               <div
                 key={plan.name}
-                className={`group relative flex min-h-[30rem] flex-col justify-between overflow-hidden rounded-[16px] border border-[#E0E0E0] bg-white/90 p-6 text-[#001830] transition-all duration-300 ease-in-out hover:bg-[#0a192f] hover:text-white ${
-                  isPro ? "lg:min-h-[34rem] shadow-sm ring-1 ring-[#2563EB]/10" : "shadow-sm"
-                }`}
+                className={`group relative flex min-h-[30rem] flex-col justify-between rounded-[28px] border border-[#E5E7EB] bg-white p-8 text-[#000B18] shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-300 hover:bg-[#000B18] hover:text-white ${isPro ? "ring-1 ring-[#000B18]/10" : ""}`}
                 style={{ animationDelay: `${i * 120}ms` }}
               >
                 {isPro && (
-                  <div className="absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full border border-[#2563EB]/30 bg-white/95 px-4 py-1 text-xs font-semibold tracking-[0.12em] text-[#2563EB] shadow-sm">
+                  <div className="absolute inset-x-0 top-4 mx-auto w-max rounded-full bg-[#000B18] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#F5F5DC] shadow-sm">
                     {lang === "he" ? "הפופולרי ביותר" : "Most Popular"}
                   </div>
                 )}
 
                 <div className="space-y-8 pt-6 text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl border border-[#E0E0E0] bg-[#F8F9FA] text-[#001830] transition-colors duration-300 group-hover:border-transparent group-hover:bg-white/10 group-hover:text-white">
-                    <Check size={26} strokeWidth={2} className="transition-colors duration-300 group-hover:text-white" />
-                  </div>
                   <div className="space-y-4 px-2">
-                    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#64748B]">
+                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#64748B]">
                       {lang === "he" ? "תוכנית" : "Plan"}
                     </p>
-                    <h2 className="text-2xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-white">
+                    <h2 className="text-3xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-white">
                       {plan.name}
                     </h2>
                     <div className="space-y-1">
-                      <p className="text-5xl font-bold tracking-tight transition-colors duration-300 group-hover:text-white">
+                      <p className="text-5xl font-extrabold tracking-tight transition-colors duration-300 group-hover:text-white">
                         {plan.price}
                       </p>
-                      {'period' in plan && (
+                      {plan.period && (
                         <p className="text-sm text-[#64748B] transition-colors duration-300 group-hover:text-white/80">
-                          {(plan as any).period}
+                          {plan.period}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <ul className="space-y-3 px-2 text-left text-[#475569] transition-colors duration-300 group-hover:text-white/90">
+                  <ul className="space-y-4 text-left transition-colors duration-300 group-hover:text-white/90">
                     {featureList.map((feature) => (
-                      <li key={feature} className="flex items-center gap-3 text-sm leading-6">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E0E0E0] bg-[#F8F9FA] text-[#001830] transition-colors duration-300 group-hover:border-white group-hover:bg-white/10 group-hover:text-white">
-                          <Check size={14} strokeWidth={2} />
-                        </span>
+                      <li key={feature} className="flex items-start gap-3 text-base leading-7">
+                        <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-current shrink-0" />
                         <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <button className="mt-8 inline-flex w-full items-center justify-center rounded-full border border-[#E0E0E0] bg-white px-5 py-3 text-sm font-semibold text-[#001830] transition-all duration-300 hover:bg-white/10 hover:text-white group-hover:border-transparent group-hover:bg-white/10 group-hover:text-white">
-                  <Rocket size={16} className="transition-colors duration-300 group-hover:text-white" />
-                  {plan.name === "Free" ? t("pricing.startFree") : t("pricing.upgradeNow")}
+                <button className="mt-8 inline-flex w-full items-center justify-center rounded-full border border-current bg-transparent px-5 py-4 text-sm font-semibold uppercase tracking-[0.04em] transition-colors duration-300 hover:bg-white/10 group-hover:bg-white/10 group-hover:text-white">
+                  {plan.priceLabel}
                 </button>
               </div>
             );

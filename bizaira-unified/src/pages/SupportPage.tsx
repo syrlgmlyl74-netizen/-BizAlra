@@ -1,9 +1,6 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, HelpCircle, Search } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-
-const NAVY = "#000810";
-const PURPLE = "#000810";
 
 const SupportPage = () => {
   const { t, lang } = useI18n();
@@ -19,99 +16,103 @@ const SupportPage = () => {
     { q: t("faq.q5"), a: t("faq.a5") },
   ];
 
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredFaqs = normalizedQuery
+    ? faqs.filter((faq) => {
+        const content = `${faq.q} ${faq.a}`.toLowerCase();
+        return content.includes(normalizedQuery);
+      })
+    : faqs;
+
   return (
-    <div className="px-5 pt-8 pb-28 max-w-xl mx-auto" dir={isHe ? "rtl" : "ltr"}>
-      <div className="mb-8 animate-float-up">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
-          {isHe ? "מרכז עזרה" : "Help Center"}
-        </p>
-        <h1 className="text-3xl font-black mb-2" style={{ color: NAVY }}>
-          {t("support.title")}
-        </h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {t("support.subtitle")}
-        </p>
+    <div className="min-h-screen bg-white px-5 pt-10 pb-28" dir={isHe ? "rtl" : "ltr"}>
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-12">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.4em] text-[#64748B] mb-3">
+            {isHe ? "מרכז תמיכה" : "Support Center"}
+          </p>
+          <h1 className="text-5xl font-black tracking-tight text-[#000B18] mb-4">
+            {t("support.title")}
+          </h1>
+          <p className="max-w-3xl text-lg leading-9 text-[#1F2937]">
+            {t("support.subtitle")}
+          </p>
+        </div>
+
+        <section className="mb-8 space-y-4">
+          <div className="rounded-[32px] border border-[#000B18] bg-white p-6 shadow-[0_24px_60px_rgba(0,11,24,0.08)]">
+            <div className="mb-5">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#64748B]">
+                {isHe ? "עזרה מהירה" : "Quick Help"}
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#000B18]">
+                {isHe ? "חיפוש ב-FAQ" : "Search the FAQ"}
+              </h2>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    setSearchQuery(searchQuery.trim());
+                  }
+                }}
+                placeholder={isHe ? "חפש שאלות ותשובות ב-FAQ" : "Search questions and answers in FAQ"}
+                className="flex-1 min-w-0 rounded-full border border-[#000B18] bg-white px-5 py-4 text-base text-[#000B18] placeholder:text-[#94a3b8] shadow-[0_18px_40px_rgba(0,11,24,0.08)] focus:border-[#000B18] focus:outline-none focus:ring-2 focus:ring-[#000B18]/10"
+              />
+              <button
+                type="button"
+                className="inline-flex min-w-[140px] items-center justify-center rounded-full bg-[#000B18] px-5 py-4 text-sm font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#000B18]/90"
+                onClick={() => setSearchQuery(searchQuery.trim())}
+              >
+                {isHe ? "חפש" : "Search"}
+              </button>
+            </div>
+            <p className="mt-4 text-sm leading-7 text-[#475569]">
+              {isHe
+                ? "העוזר החכם מנתח את בקשתך ומציע פתרונות עסקיים מהירים וחדים."
+                : "The smart assistant analyzes your request and offers fast, sharp business guidance."}
+            </p>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          {filteredFaqs.length === 0 ? (
+            <div className="rounded-[28px] border border-[#E5E7EB] bg-[#F8F9FB] p-12 text-center">
+              <p className="text-lg font-semibold text-[#000B18]">
+                לא נמצאו תוצאות מתאימות. לניסוח אחר או פנה לתמיכה.
+              </p>
+            </div>
+          ) : (
+            filteredFaqs.map((faq, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <div key={i} className="overflow-hidden rounded-[28px] border border-[#E5E7EB] bg-white shadow-[0_14px_32px_rgba(0,11,24,0.04)]">
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                    className="group w-full flex items-center justify-between px-6 py-5 text-start transition-colors duration-200 hover:bg-[#000B18] hover:text-white"
+                  >
+                    <span className="text-base font-semibold text-[#000B18] transition-colors duration-200">
+                      {faq.q}
+                    </span>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F3F7FB] text-[#475569] transition-colors duration-200 group-hover:bg-white">
+                      {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <div className="border-t border-[#E5E7EB] px-6 py-5 bg-white">
+                      <p className="text-sm leading-8 text-[#475569]">{faq.a}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </section>
       </div>
-
-      <section className="mb-10 animate-float-up" style={{ animationDelay: "60ms" }}>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-[#F2F5F9]">
-            <HelpCircle size={18} strokeWidth={1.6} style={{ color: PURPLE }} />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{isHe ? "שאלות נפוצות" : "FAQ"}</p>
-            <h2 className="text-xl font-bold" style={{ color: NAVY }}>
-              {isHe ? "תשובות מהירות לעסק שלך" : "Fast answers for your business"}
-            </h2>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          {faqs.map((faq, i) => {
-            const isOpen = openFaq === i;
-            return (
-              <div key={i} className="glass-card rounded-3xl overflow-hidden border border-[#E5E7EB]">
-                <button
-                  onClick={() => setOpenFaq(isOpen ? null : i)}
-                  className="w-full flex items-center justify-between px-5 py-4 text-start"
-                >
-                  <span className="text-sm font-semibold text-[#001830]">{faq.q}</span>
-                  <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F8FAFC] text-[#475569] transition">
-                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </div>
-                </button>
-                {isOpen && (
-                  <div className="border-t border-[#E5E7EB] px-5 py-4 bg-white">
-                    <p className="text-sm leading-7 text-slate-600">{faq.a}</p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="animate-float-up" style={{ animationDelay: "120ms" }}>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-[#F2F5F9]">
-            <Search size={18} strokeWidth={1.6} style={{ color: PURPLE }} />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{isHe ? "עזרה מהירה" : "Quick help"}</p>
-            <h2 className="text-xl font-bold" style={{ color: NAVY }}>
-              {isHe ? "מצא תשובות חכמות בשבריר שנייה" : "Find smart guidance in seconds"}
-            </h2>
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-[#E5E7EB] bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-600 leading-relaxed mb-4">
-            {isHe
-              ? "הקלד בקצרה את הצורך העסקי שלך ונכוון אותך לכלי המתאים ביותר."
-              : "Type your business need and we’ll guide you to the right tool."}
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={isHe ? "חפש FAQ, כלי או טיפ מהיר..." : "Search FAQ, tool, or quick tip..."}
-              className="w-full rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#000B18]/10"
-            />
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-2xl bg-[#000B18] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#001830]"
-              onClick={() => {}}
-            >
-              <Search size={16} className="me-2" />
-              {isHe ? "חפש" : "Search"}
-            </button>
-          </div>
-          <p className="mt-4 text-xs text-slate-500">
-            {isHe ? "הכלי משפר את חוויית התמיכה המהירה בלבד." : "This search improves your quick support experience only."}
-          </p>
-        </div>
-      </section>
     </div>
   );
 };

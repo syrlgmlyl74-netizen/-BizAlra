@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, type FormEvent, type ReactNode } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Sparkles, Mail, Lock, User, Phone, Loader2, Eye, EyeOff } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,15 +7,16 @@ import { toast } from "sonner";
 import { getSavedGuestAnswers, createGuestSession } from "@/lib/guest-session";
 import { safeSetSessionItem } from "@/lib/safe-storage";
 
-const DEEP_MIDNIGHT_BLUE = "#000810";
+const DEEP_MIDNIGHT_BLUE = "#000B18";
 const PEARL_WHITE = "#FFFFFF";
 const INPUT_BG = "#F9FAFB";
 
 const AuthPage = () => {
   const { lang } = useI18n();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isHe = lang === "he";
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(() => searchParams.get("mode")?.toLowerCase() === "login");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -25,7 +26,7 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [fade, setFade] = useState(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!isLogin && (!name || !email || !password || !phone)) {
       toast.error(isHe ? "נא למלא את כל השדות" : "Please fill in all fields");
@@ -51,7 +52,7 @@ const AuthPage = () => {
           email,
           password,
           options: {
-            data: { 
+            data: {
               full_name: name,
               phone: phone,
               ...getSavedGuestAnswers(),
@@ -76,11 +77,10 @@ const AuthPage = () => {
       dir={isHe ? "rtl" : "ltr"}
     >
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-10">
-          <div 
+          <div
             className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
-            style={{ background: `linear-gradient(135deg, ${DEEP_MIDNIGHT_BLUE} 0%, ${DEEP_MIDNIGHT_BLUE} 100%)`, boxShadow: "0 8px 24px -4px rgba(0, 31, 63, 0.35)" }}
+            style={{ background: DEEP_MIDNIGHT_BLUE, boxShadow: "0 8px 24px -4px rgba(0, 31, 63, 0.35)" }}
           >
             <Sparkles size={28} className="text-white" strokeWidth={1.5} />
           </div>
@@ -89,13 +89,11 @@ const AuthPage = () => {
           </h1>
         </div>
 
-        {/* Form card */}
         <form
           onSubmit={handleSubmit}
           className={`rounded-[32px] p-10 space-y-6 transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
-          style={{ backgroundColor: "#FFFFFF", boxShadow: "0 20px 60px -12px rgba(0,0,0,0.08)", border: "1px solid #E5E7EB" }}
+          style={{ backgroundColor: PEARL_WHITE, boxShadow: "0 20px 60px -12px rgba(0,0,0,0.08)", border: "1px solid #E5E7EB" }}
         >
-          {/* Name field */}
           {!isLogin && (
             <FieldWrapper label={isHe ? "שם מלא" : "Full Name"}>
               <div className="relative">
@@ -108,20 +106,15 @@ const AuthPage = () => {
                 <input
                   type="text"
                   value={name}
-                  onChange={e => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder={isHe ? "שם מלא" : "Full Name"}
-                  className="w-full rounded-2xl py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all border border-gray-200 focus:border-blue-500"
-                  style={{ 
-                    backgroundColor: INPUT_BG, 
-                    [isHe ? "paddingRight" : "paddingLeft"]: "40px", 
-                    [isHe ? "paddingLeft" : "paddingRight"]: "16px" 
-                  }}
+                  className="w-full rounded-2xl py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all border border-gray-200 focus:border-[#000B18]"
+                  style={{ backgroundColor: INPUT_BG, [isHe ? "paddingRight" : "paddingLeft"]: "40px", [isHe ? "paddingLeft" : "paddingRight"]: "16px" }}
                 />
               </div>
             </FieldWrapper>
           )}
 
-          {/* Phone field */}
           {!isLogin && (
             <FieldWrapper label={isHe ? "מספר טלפון" : "Phone Number"}>
               <div className="relative">
@@ -134,21 +127,16 @@ const AuthPage = () => {
                 <input
                   type="tel"
                   value={phone}
-                  onChange={e => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(e.target.value)}
                   placeholder={isHe ? "050-1234567" : "+972-50-1234567"}
                   dir="ltr"
-                  className="w-full rounded-2xl py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all border border-gray-200 focus:border-blue-500"
-                  style={{ 
-                    backgroundColor: INPUT_BG, 
-                    [isHe ? "paddingRight" : "paddingLeft"]: "40px", 
-                    [isHe ? "paddingLeft" : "paddingRight"]: "16px" 
-                  }}
+                  className="w-full rounded-2xl py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all border border-gray-200 focus:border-[#000B18]"
+                  style={{ backgroundColor: INPUT_BG, [isHe ? "paddingRight" : "paddingLeft"]: "40px", [isHe ? "paddingLeft" : "paddingRight"]: "16px" }}
                 />
               </div>
             </FieldWrapper>
           )}
 
-          {/* Email */}
           <FieldWrapper label={isHe ? "אימייל" : "Email"}>
             <div className="relative">
               <Mail
@@ -160,20 +148,15 @@ const AuthPage = () => {
               <input
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 dir="ltr"
-                className="w-full rounded-2xl py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all border border-gray-200 focus:border-blue-500"
-                style={{ 
-                  backgroundColor: INPUT_BG, 
-                  [isHe ? "paddingRight" : "paddingLeft"]: "40px", 
-                  [isHe ? "paddingLeft" : "paddingRight"]: "16px" 
-                }}
+                className="w-full rounded-2xl py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all border border-gray-200 focus:border-[#000B18]"
+                style={{ backgroundColor: INPUT_BG, [isHe ? "paddingRight" : "paddingLeft"]: "40px", [isHe ? "paddingLeft" : "paddingRight"]: "16px" }}
               />
             </div>
           </FieldWrapper>
 
-          {/* Password */}
           <FieldWrapper label={isHe ? "סיסמה" : "Password"}>
             <div className="relative">
               <Lock
@@ -185,15 +168,11 @@ const AuthPage = () => {
               <input
                 type={showPw ? "text" : "password"}
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 dir="ltr"
-                className="w-full rounded-2xl py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all border border-gray-200 focus:border-blue-500"
-                style={{ 
-                  backgroundColor: INPUT_BG, 
-                  [isHe ? "paddingRight" : "paddingLeft"]: "40px", 
-                  [isHe ? "paddingLeft" : "paddingRight"]: "40px" 
-                }}
+                className="w-full rounded-2xl py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all border border-gray-200 focus:border-[#000B18]"
+                style={{ backgroundColor: INPUT_BG, [isHe ? "paddingRight" : "paddingLeft"]: "40px", [isHe ? "paddingLeft" : "paddingRight"]: "40px" }}
               />
               <button
                 type="button"
@@ -206,7 +185,6 @@ const AuthPage = () => {
             </div>
           </FieldWrapper>
 
-          {/* Security policy */}
           {!isLogin && (
             <div className="flex items-start gap-3 mt-2">
               <input
@@ -222,20 +200,16 @@ const AuthPage = () => {
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading || (!isLogin && !agreePolicy)}
             className="w-full py-3.5 rounded-2xl font-bold text-white flex items-center justify-center gap-2 hover:scale-[1.02] transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
-            style={{ background: `linear-gradient(135deg, ${DEEP_MIDNIGHT_BLUE} 0%, ${DEEP_MIDNIGHT_BLUE} 100%)`, boxShadow: "0 8px 24px -4px rgba(0, 8, 16, 0.35)" }}
+            style={{ background: DEEP_MIDNIGHT_BLUE, boxShadow: "0 8px 24px -4px rgba(0, 11, 24, 0.35)" }}
           >
-            {loading
-              ? <Loader2 size={18} className="animate-spin" />
-              : <Sparkles size={18} />}
+            {loading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
             {isLogin ? (isHe ? "התחברות" : "Login") : (isHe ? "הרשמה" : "Sign Up")}
           </button>
 
-          {/* Login Toggle */}
           <div className="text-center pt-3">
             <button
               type="button"
@@ -253,7 +227,6 @@ const AuthPage = () => {
             </button>
           </div>
 
-          {/* Guest Access */}
           <div className="text-center pt-2">
             <button
               type="button"
@@ -262,7 +235,7 @@ const AuthPage = () => {
                 safeSetSessionItem("onboarding_complete", "true");
                 navigate("/");
               }}
-              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-sm text-[#000B18] hover:text-[#001830] transition-colors"
               style={{ fontFamily: "'Heebo', sans-serif" }}
             >
               {isHe ? "המשך כאורח" : "Continue as guest"}
@@ -276,9 +249,7 @@ const AuthPage = () => {
 
 const FieldWrapper = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="space-y-1.5">
-    <label className="text-xs font-bold text-gray-600 uppercase tracking-wide block">
-      {label}
-    </label>
+    <label className="text-xs font-bold text-gray-600 uppercase tracking-wide block">{label}</label>
     {children}
   </div>
 );

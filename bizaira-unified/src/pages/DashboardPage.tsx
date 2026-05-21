@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, ShoppingCart, Download, Rocket, Box, Headphones } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const DashboardPage = () => {
@@ -13,127 +12,98 @@ const DashboardPage = () => {
     }
   }, [navigate, user]);
 
-  return (
-    <div className="min-h-screen bg-white text-[#001830]" dir="rtl" style={{ fontFamily: "'Rubik', 'Inter', sans-serif" }}>
-      <header className="sticky top-0 z-50 border-b border-[#001830]/10 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3 rounded-2xl border border-[#E0E0E0] bg-white/80 px-4 py-2 text-[#001830]">
-            <User size={18} strokeWidth={1.5} />
-            <span className="text-sm font-semibold">Bizaira</span>
-          </div>
+  const cards = [
+    {
+      id: 1,
+      title: "סטודיו AI",
+      desc: "צור תמונות עסקיות ברזולוציה גבוהה ובטון פרימיום.",
+      path: "/create/image-studio",
+      featured: true,
+    },
+    {
+      id: 2,
+      title: "סטטוס אישי",
+      desc: "נהל את החשבון, הקרדיטים והעדפות המערכת.",
+      path: "/profile",
+    },
+    {
+      id: 3,
+      title: "ניתוחים עסקיים",
+      desc: "קבל דוחות מהירים על ביצועי העסק שלך.",
+      path: "/create/analytics",
+    },
+    {
+      id: 4,
+      title: "בחר מסלול",
+      desc: "שדרג לתכנית פרימיום עם ניהול עסקי מקצועי.",
+      path: "/pricing",
+    },
+    {
+      id: 5,
+      title: "תמיכה מקצועית",
+      desc: "מצא פתרונות מהירים למוקדי שירות ותהליכים.",
+      path: "/support",
+    },
+  ];
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="rounded-2xl border border-[#E0E0E0] bg-white/80 px-4 py-3 text-right text-sm font-semibold text-[#001830]">
-              <div>Free Plan</div>
-              <div className="mt-1 text-xs text-[#001830]/70">5 / 5 credits</div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="rounded-2xl border border-[#001830] bg-[#000B18] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#001830]/90">
+  return (
+    <div className="min-h-screen bg-white text-[#000B18]" dir="rtl">
+      <main className="mx-auto max-w-7xl px-6 py-10">
+        <section className="text-center">
+          <div className="mx-auto max-w-4xl">
+            <h1 className="mx-auto max-w-full whitespace-nowrap text-[clamp(1.5rem,2.2vw,2rem)] font-semibold tracking-tight text-[#000B18]">
+              ברוכים הבאים למרכז הניהול העסקי שלך
+            </h1>
+            <p className="mt-4 text-sm leading-7 text-[#475569]">
+              בחר את הפעולה הבאה כדי להתקדם במהירות ובסטייל.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <button
+                onClick={() => navigate("/auth?mode=login")}
+                className="min-w-[160px] rounded-3xl bg-[#000B18] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#000B18]/90"
+              >
                 התחברות
               </button>
-              <button className="rounded-2xl border border-[#001830] bg-[#000B18] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#001830]/90">
+              <button
+                onClick={() => navigate("/auth?mode=register")}
+                className="min-w-[160px] rounded-3xl bg-[#000B18] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#000B18]/90"
+              >
                 הרשמה
               </button>
             </div>
           </div>
-        </div>
-      </header>
+        </section>
 
-      <main className="mx-auto max-w-6xl px-6 pt-10 pb-28">
-        <section className="text-center">
-          <div className="mx-auto max-w-[90vw]">
-            <h1 className="whitespace-nowrap text-center text-2xl font-semibold tracking-tight text-[#001830] sm:text-3xl">
-              ברוכים הבאים למרכז הניהול העסקי שלך
-            </h1>
-            <p className="mt-3 text-center text-sm text-[#001830]/70">
-              בחר את הפעולה הבאה כדי להתקדם במהירות ובסטייל.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {[
-              {
-                id: 1,
-                icon: ShoppingCart,
-                title: "התחל ליצור",
-                desc: "צור ותנהל תוכן מותאם במהירות ובדיוק.",
-                path: "/create",
-              },
-              {
-                id: 2,
-                icon: User,
-                title: "אזור אישי",
-                desc: "עדכן פרטים ואפסן את העדפות המערכת.",
-                path: "/profile",
-              },
-              {
-                id: 3,
-                icon: Rocket,
-                title: "מעקב פעילות",
-                desc: "צפה בנתוני ביצועים ודוחות שימוש תקופתיים.",
-                path: "/create/analytics",
-              },
-              {
-                id: 4,
-                icon: Box,
-                title: "ניהול מנוי",
-                desc: "שדרג את התוכנית ונהל אפשרויות תשלום בקלות.",
-                path: "/pricing",
-              },
-              {
-                id: 5,
-                icon: Headphones,
-                title: "תמיכה",
-                desc: "קבל מענה מהיר וסיוע טכני מקצועי.",
-                path: "/support",
-              },
-            ].map((panel) => {
-              const IconComponent = panel.icon;
-              return (
-                <button
-                  key={panel.id}
-                  type="button"
-                  onClick={() => navigate(panel.path)}
-                  className="group flex h-[34rem] w-full flex-col items-center justify-between overflow-hidden rounded-3xl border border-[#E0E0E0] bg-white p-6 text-center transition-all duration-300 ease-in-out hover:bg-[#000B18]"
-                >
-                  <div className="space-y-6">
-                          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl border border-[#E0E0E0] bg-white text-[#001830] transition-colors duration-300 group-hover:border-white group-hover:bg-white/10 group-hover:text-white">
-                      <IconComponent size={26} strokeWidth={1.5} className="transition-colors duration-300 group-hover:text-white" />
-                    </div>
-
-                    <div className="space-y-4 px-2">
-                      <h2 className="text-xl font-semibold text-[#001830] transition-colors duration-300 group-hover:text-white">
-                        {panel.title}
-                      </h2>
-                      <p className="text-sm leading-6 text-[#4B5563] transition-colors duration-300 group-hover:text-white">
-                        {panel.desc}
-                      </p>
-                    </div>
-                  </div>
-
-                  <span className="inline-flex w-full items-center justify-center rounded-full border border-[#E0E0E0] px-4 py-3 text-sm font-semibold text-[#001830] transition-all duration-300 group-hover:border-white group-hover:bg-white/10 group-hover:text-white">
-                    פתח
+        <section className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          {cards.map((card) => (
+            <button
+              key={card.id}
+              type="button"
+              onClick={() => navigate(card.path)}
+              className={`group flex h-[22rem] w-full flex-col justify-between overflow-hidden rounded-[24px] border bg-white p-6 text-left transition-all duration-300 ${card.featured ? "border-[#000B18] shadow-[0_16px_40px_rgba(0,11,24,0.12)]" : "border-[#E2E8F0] shadow-[0_10px_25px_rgba(0,11,24,0.06)]"} hover:border-transparent hover:bg-[#000B18] hover:text-white`}
+            >
+              <div className="space-y-4">
+                {card.featured && (
+                  <span className="inline-flex rounded-full bg-[#000B18] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.26em] text-white">
+                    הכי מומלץ
                   </span>
-                </button>
-              );
-            })}
-          </div>
+                )}
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold transition-colors duration-300 group-hover:text-white">
+                    {card.title}
+                  </h2>
+                  <p className="text-sm leading-7 text-[#475569] transition-colors duration-300 group-hover:text-white/90">
+                    {card.desc}
+                  </p>
+                </div>
+              </div>
+              <div className="inline-flex w-full items-center justify-center rounded-full border border-[#000B18] px-4 py-3 text-sm font-semibold text-[#000B18] transition-all duration-300 group-hover:border-transparent group-hover:bg-white/10 group-hover:text-white">
+                פתח
+              </div>
+            </button>
+          ))}
         </section>
       </main>
-
-      <footer className="fixed inset-x-0 bottom-0 z-50 border-t border-[#001830]/10 bg-white py-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-center gap-3 px-6">
-          <button className="inline-flex items-center gap-2 rounded-full border border-[#E0E0E0] bg-white px-5 py-3 text-sm font-semibold text-[#001830]">
-            <User size={20} strokeWidth={1.5} />
-            <span>אזור אישי</span>
-          </button>
-          <button className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#E0E0E0] bg-white text-[#001830]/60">
-            <ShoppingCart size={18} strokeWidth={1.5} />
-          </button>
-          <button className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#E0E0E0] bg-white text-[#001830]/60">
-            <Download size={18} strokeWidth={1.5} />
-          </button>
-        </div>
-      </footer>
     </div>
   );
 };
