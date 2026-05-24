@@ -100,8 +100,8 @@ const AccountSettingsPage = () => {
             <p className="text-sm font-light leading-6 text-[#001830]/70">
               {isHe ? "ניהול פרטי החשבון והגדרות העסק שלך" : "Manage your account details and business settings"}
             </p>
-        </div>
-        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+          </div>
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <button
             type="button"
             onClick={() => navigate(-1)}
