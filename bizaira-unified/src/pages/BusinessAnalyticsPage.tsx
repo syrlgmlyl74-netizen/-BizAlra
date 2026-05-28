@@ -5,6 +5,8 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { useSmartMemory } from "@/hooks/useSmartMemory";
 import { generateAnalytics } from "@/lib/ai-service";
+import { getActivityStats } from "@/lib/activity-tracker";
+import { openStudioLimitModal } from "@/lib/studio-limit-modal";
 import { saveCreation, trackDownload } from "@/lib/creations-store";
 import {
   ArrowRight, ArrowLeft, TrendingUp, TrendingDown, DollarSign,
@@ -23,6 +25,7 @@ const BusinessAnalyticsPage = () => {
   const currency = "₪";
   const isPremium = Boolean(profile?.plan?.toLowerCase().includes("pro") || profile?.plan?.toLowerCase().includes("premium"));
   const { saveEntry, getProgressMessages, history, lastEntry } = useSmartMemory("analytics", isPremium);
+  const { totalActions, limit } = getActivityStats();
 
   const [monthlyRevenue, setMonthlyRevenue] = useState("");
   const [monthlyExpenses, setMonthlyExpenses] = useState("");
@@ -66,6 +69,11 @@ const BusinessAnalyticsPage = () => {
     : "";
 
   const handleStartAnalysis = async () => {
+    if (totalActions >= limit) {
+      openStudioLimitModal();
+      return;
+    }
+
     if (revenue <= 0) return;
     setIsAnalyzing(true);
     setAnalysisError(null);
@@ -110,6 +118,11 @@ const BusinessAnalyticsPage = () => {
   const progressMessages = getProgressMessages({ revenue, profit, clients, profitMargin }, lang);
 
   const handleAsk = async () => {
+    if (totalActions >= limit) {
+      openStudioLimitModal();
+      return;
+    }
+
     if (!question.trim()) return;
     setIsAsking(true);
     try {

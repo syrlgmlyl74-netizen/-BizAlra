@@ -2,7 +2,8 @@ import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { generateImage } from "@/lib/ai-service";
-import { trackCreation, trackDownload } from "@/lib/activity-tracker";
+import { getActivityStats, trackCreation, trackDownload } from "@/lib/activity-tracker";
+import { openStudioLimitModal } from "@/lib/studio-limit-modal";
 import SparkleIcon from "@/components/SparkleIcon";
 import {
   ArrowRight, ArrowLeft, Upload, X, Download, RefreshCw,
@@ -100,6 +101,7 @@ const ProductPhotoStudioPage = () => {
   const steps: WizardStep[] = ["type", "upload", "style", "customize"];
   const currentStepIndex = steps.indexOf(step);
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
+  const { totalActions, limit } = getActivityStats();
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -115,6 +117,11 @@ const ProductPhotoStudioPage = () => {
   };
 
   const handleEnhance = async () => {
+    if (totalActions >= limit) {
+      openStudioLimitModal();
+      return;
+    }
+
     setIsProcessing(true);
     try {
       const styleLabel = DESIGN_STYLES.find(s => s.id === designStyle)?.en || "minimalist";

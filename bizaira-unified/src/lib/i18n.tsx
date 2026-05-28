@@ -553,7 +553,7 @@ const translations: Translations = {
   "common.pro": { he: "PRO", en: "PRO" },
   "common.proOnly": { he: "PRO בלבד", en: "PRO only" },
   "app.limit.title": { he: "מגבלת סטודיו", en: "Studio Limit Reached" },
-  "app.limit.subtitle": { he: "הגעת למגבלת 5 הפעולות החודשית", en: "You’ve reached your 5 monthly actions" },
+  "app.limit.subtitle": { he: "הגעת למגבלת 5 הפעולות החודשיות", en: "You’ve reached your 5 monthly actions" },
   "app.limit.desc": { he: "הסטודיו הושתק עד לחידוש הקרדיטים או שדרוג ל-PRO. זוהי מגבלת תכנית חכמה, לא תקלה באתר.", en: "The studio is paused until your credits refresh or you upgrade to PRO. This is a plan feature, not a system failure." },
   "app.limit.upgrade": { he: "כדי להמשיך ליצור ללא גבולות, שדרגו לתכנית Pro.", en: "To continue creating without limits, upgrade to our Pro Plan." },
   "app.limit.renewal": { he: "עד לחידוש הקרדיטים", en: "Until credit renewal" },

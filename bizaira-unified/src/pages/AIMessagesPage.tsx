@@ -6,6 +6,8 @@ import { useSmartMemory } from "@/hooks/useSmartMemory";
 import { generateMessage } from "@/lib/ai-service";
 import SparkleIcon from "@/components/SparkleIcon";
 import { saveCreation, trackDownload } from "@/lib/creations-store";
+import { getActivityStats } from "@/lib/activity-tracker";
+import { openStudioLimitModal } from "@/lib/studio-limit-modal";
 import {
   ArrowRight, ArrowLeft, Sparkles, Loader2,
   Copy, Check, RefreshCw, Minimize2, Heart, Layers, Download,
@@ -39,6 +41,7 @@ const AIMessagesPage = () => {
   const BackArrow = isHe ? ArrowRight : ArrowLeft;
   const isPremium = Boolean(profile?.plan?.toLowerCase().includes("pro") || profile?.plan?.toLowerCase().includes("premium"));
   const { saveEntry, lastEntry } = useSmartMemory("messages", isPremium);
+  const { totalActions, limit } = getActivityStats();
 
   const [purpose, setPurpose] = useState<Purpose>("sale");
   const [tone, setTone] = useState<Tone>("warm");
@@ -82,6 +85,11 @@ const AIMessagesPage = () => {
   };
 
   const handleGenerate = async (modifier?: string) => {
+    if (totalActions >= limit) {
+      openStudioLimitModal();
+      return;
+    }
+
     setIsGenerating(true);
     try {
       const payload = buildMessagePayload(modifier);

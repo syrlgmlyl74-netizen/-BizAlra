@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/lib/i18n";
+import { getActivityStats } from "@/lib/activity-tracker";
 import { UserCircle2, Headphones, CreditCard, Settings } from "lucide-react";
 
 const ProfilePage = () => {
@@ -11,9 +12,18 @@ const ProfilePage = () => {
   const { profile } = useAuth();
 
   const stats = getActivityStats();
-  const totalCredits = profile?.credits_total ?? stats.limit;
-  const usedCredits = profile?.credits_used ?? stats.totalActions;
-  const remainingCredits = Math.max(0, totalCredits - usedCredits);
+  const totalCredits = stats.limit;
+  const remainingCredits = stats.remainingActions;
+  const renewalDateLabel = stats.nextRenewalDate
+    ? stats.nextRenewalDate.toLocaleDateString(isHe ? "he-IL" : "en-US", { day: "2-digit", month: "2-digit", year: "numeric" })
+    : isHe
+      ? "לא זמין"
+      : "N/A";
+  const renewalCountdown = useMemo(() => {
+    if (!stats.nextRenewalDate) return null;
+    const diffMs = stats.nextRenewalDate.getTime() - Date.now();
+    return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+  }, [stats.nextRenewalDate]);
   const isPro = profile?.plan === "pro";
   const planLabel = isPro ? "PRO" : isHe ? "תוכנית חינם" : "Free Plan";
   const userName = profile?.full_name ?? profile?.email ?? (isHe ? "משתמש BizAIra" : "BizAIra User");
@@ -25,10 +35,13 @@ const ProfilePage = () => {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <header className="mb-8">
           <div className="max-w-4xl mx-auto text-right">
-            <h1 className="text-5xl font-black tracking-tight text-[#001830]">
+            <p className="luxury-page-eyebrow mb-3">
+              {isHe ? "מרכז הניהול" : "Account Center"}
+            </p>
+            <h1 className="luxury-page-title">
               {isHe ? "אזור אישי" : "Personal Area"}
             </h1>
-            <p className="mt-2 max-w-2xl text-sm font-light leading-7 text-soft-muted">
+            <p className="luxury-page-copy mt-3">
               {isHe ? "ניהול פרטי החשבון והגדרות העסק שלך" : "Manage your account details and business settings"}
             </p>
           </div>
@@ -47,8 +60,8 @@ const ProfilePage = () => {
             </div>
 
             <div className="space-y-3 text-right">
-              <p className="text-sm font-semibold text-[#000B18]">{isHe ? `נשארים קרדיטים: ${remainingCredits} / ${totalCredits}` : `Credits remaining: ${remainingCredits} / ${totalCredits}`}</p>
-              <p className="text-sm text-slate-500">{isHe ? `מתחדש בתאריך: ${stats.nextRenewalDate.toLocaleDateString(isHe ? 'he-IL' : 'en-US')}` : `Renews on: ${stats.nextRenewalDate.toLocaleDateString(isHe ? 'he-IL' : 'en-US')}`}</p>
+              <p className="text-sm font-semibold text-[#000B18]">{isHe ? `נשארו קרדיטים: ${remainingCredits} / ${totalCredits}` : `Credits remaining: ${remainingCredits} / ${totalCredits}`}</p>
+              <p className="text-sm text-slate-500">{isHe ? `תאריך חידוש: ${renewalDateLabel}` : `Renewal date: ${renewalDateLabel}`}</p>
             </div>
           </div>
 
@@ -60,41 +73,82 @@ const ProfilePage = () => {
             <div className="h-3 overflow-hidden rounded-full bg-slate-100">
               <div className="h-full rounded-full bg-[#000B18] transition-all duration-300" style={{ width: `${creditPercent}%` }} />
             </div>
+            <div className="mt-4 rounded-2xl border border-[#001830]/10 bg-[#FAFBFC] px-4 py-3 text-right">
+              <p className="text-xs uppercase tracking-[0.2em] text-soft-muted">{isHe ? "החידוש הבא" : "Next renewal"}</p>
+              <p className="mt-2 text-lg font-bold text-[#001830]">{renewalCountdown !== null ? (isHe ? `בעוד ${renewalCountdown} ימים` : `${renewalCountdown} days left`) : (isHe ? "לא זמין כרגע" : "Not available right now")}</p>
+              <p className="mt-1 text-sm text-slate-600">{isHe ? `תאריך חידוש: ${renewalDateLabel}` : `Renewal date: ${renewalDateLabel}`}</p>
+            </div>
           </div>
         </section>
 
         <section className="mt-8 luxury-card p-6 text-right">
           <div className="mb-4">
-            <p className="text-xs uppercase tracking-[0.26em] text-soft-muted text-right">{isHe ? "כלי ניהול מהירים" : "Quick actions"}</p>
-            <h3 className="mt-2 text-xl font-semibold text-[#001830] text-right">{isHe ? "ניהול חשבון וסטודיו" : "Account & studio controls"}</h3>
+            <p className="luxury-page-eyebrow text-right">{isHe ? "כלי ניהול מהירים" : "Quick actions"}</p>
+            <h3 className="luxury-card-title mt-2 text-right text-xl">{isHe ? "ניהול חשבון וסטודיו" : "Account & studio controls"}</h3>
           </div>
 
           <div className="flex flex-col gap-3">
             <button
               type="button"
               onClick={() => navigate("/support")}
-              className="group flex flex-row-reverse items-center justify-between w-full rounded-[16px] border border-[var(--soft-border)] bg-surface-cream px-6 py-5 text-right text-sm font-semibold text-[#001830] transition duration-300 hover:border-[#001830]/20 hover:shadow-soft-business"
+              className="luxury-card group w-full text-right transition duration-300 hover:-translate-y-0.5 hover:shadow-soft-business"
             >
-              <span>{isHe ? "תמיכה" : "Support"}</span>
-              <Headphones size={20} className="transition-colors duration-300" />
+              <div className="luxury-card-row items-center">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#001830]/10 text-[#001830]">
+                    <Headphones size={20} />
+                  </div>
+                  <div>
+                    <p className="luxury-card-title text-sm">{isHe ? "תמיכה" : "Support"}</p>
+                    <p className="luxury-card-text text-xs">{isHe ? "עזרה מהירה ומענה מקצועי" : "Quick help and expert guidance"}</p>
+                  </div>
+                </div>
+                <span className="rounded-full bg-[#001830]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#001830]/70">
+                  {isHe ? "פתח" : "Open"}
+                </span>
+              </div>
             </button>
 
             <button
               type="button"
               onClick={() => navigate("/pricing")}
-              className="group flex flex-row-reverse items-center justify-between w-full rounded-[16px] border border-[var(--soft-border)] bg-surface-cream px-6 py-5 text-right text-sm font-semibold text-[#001830] transition duration-300 hover:border-[#001830]/20 hover:shadow-soft-business"
+              className="luxury-card group w-full text-right transition duration-300 hover:-translate-y-0.5 hover:shadow-soft-business"
             >
-              <span>{isHe ? "ניהול מנוי" : "Manage subscription"}</span>
-              <CreditCard size={20} className="transition-colors duration-300" />
+              <div className="luxury-card-row items-center">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#001830]/10 text-[#001830]">
+                    <CreditCard size={20} />
+                  </div>
+                  <div>
+                    <p className="luxury-card-title text-sm">{isHe ? "ניהול מנוי" : "Manage subscription"}</p>
+                    <p className="luxury-card-text text-xs">{isHe ? "סקירת תכנית והתאמות" : "Review your plan and upgrade options"}</p>
+                  </div>
+                </div>
+                <span className="rounded-full bg-[#001830]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#001830]/70">
+                  {isHe ? "פתח" : "Open"}
+                </span>
+              </div>
             </button>
 
             <button
               type="button"
               onClick={() => navigate("/settings")}
-              className="group flex flex-row-reverse items-center justify-between w-full rounded-[16px] border border-[var(--soft-border)] bg-surface-cream px-6 py-5 text-right text-sm font-semibold text-[#001830] transition duration-300 hover:border-[#001830]/20 hover:shadow-soft-business"
+              className="luxury-card group w-full text-right transition duration-300 hover:-translate-y-0.5 hover:shadow-soft-business"
             >
-              <span>{isHe ? "הגדרות" : "Settings"}</span>
-              <Settings size={20} className="transition-colors duration-300" />
+              <div className="luxury-card-row items-center">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#001830]/10 text-[#001830]">
+                    <Settings size={20} />
+                  </div>
+                  <div>
+                    <p className="luxury-card-title text-sm">{isHe ? "הגדרות" : "Settings"}</p>
+                    <p className="luxury-card-text text-xs">{isHe ? "התאמות פרטיות ונגישות" : "Privacy and accessibility preferences"}</p>
+                  </div>
+                </div>
+                <span className="rounded-full bg-[#001830]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#001830]/70">
+                  {isHe ? "פתח" : "Open"}
+                </span>
+              </div>
             </button>
           </div>
         </section>
@@ -102,14 +156,5 @@ const ProfilePage = () => {
     </div>
   );
 };
-
-const getActivityStats = () => ({
-  limit: 20,
-  totalActions: 12,
-  nextRenewalDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-  creationsCount: 11,
-  downloadsCount: 5,
-  generalCount: 31,
-});
 
 export default ProfilePage;

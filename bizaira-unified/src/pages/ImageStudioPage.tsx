@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { generateStudioImage } from "@/lib/ai-service";
 import { getActivityStats, trackCreation, trackDownload } from "@/lib/activity-tracker";
+import { openStudioLimitModal } from "@/lib/studio-limit-modal";
 import {
   ArrowRight,
   ArrowLeft,
@@ -80,8 +81,8 @@ const ImageStudioPage = () => {
   const [description, setDescription] = useState("");
   const [sidebarTab, setSidebarTab] = useState<"type" | "style" | "details">("type");
 
-  const { totalActions, remainingActions } = getActivityStats();
-  const isLocked = totalActions >= 5;
+  const { totalActions, remainingActions, limit } = getActivityStats();
+  const isLocked = totalActions >= limit;
   const remaining = remainingActions;
 
   const isPremium = Boolean(
@@ -140,6 +141,11 @@ const ImageStudioPage = () => {
   };
 
   const handleGenerate = async () => {
+    if (totalActions >= limit) {
+      openStudioLimitModal();
+      return;
+    }
+
     if (!user) {
       setShowAuthGuard(true);
       return;

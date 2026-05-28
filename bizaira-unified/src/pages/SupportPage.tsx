@@ -124,24 +124,24 @@ const SupportPage = () => {
     <div className="min-h-screen bg-soft-cream px-5 pt-10 pb-28" dir={isHe ? "rtl" : "ltr"}>
       <div className="mx-auto max-w-5xl">
         <div className="mb-12 text-right">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.4em] text-[#64748B] mb-3">
+          <p className="luxury-page-eyebrow mb-3">
             {isHe ? "מרכז תמיכה" : "Support Center"}
           </p>
-          <h1 className="text-5xl font-black tracking-tight text-[#001830] mb-4">
+          <h1 className="luxury-page-title mb-4">
             {isHe ? "תמיכה" : "Support"}
           </h1>
-          <p className="max-w-3xl text-sm leading-7 text-[#475569]">
+          <p className="luxury-page-copy">
             {isHe ? "היעזרו ב-AI החכם שלנו או עיינו בשאלות הנפוצות" : "Use our smart AI assistant or browse frequently asked questions"}
           </p>
         </div>
 
         <section className="mb-8 space-y-4">
-          <div className="luxury-card rounded-[16px] bg-surface-cream shadow-soft-business">
+          <div className="luxury-card">
             <div className="mb-5 text-right">
-              <p className="text-xs font-medium uppercase tracking-widest text-[#001830]/60">
+              <p className="luxury-page-eyebrow">
                 {isHe ? "עוזר חכם AI" : "Smart AI Assistant"}
               </p>
-              <h2 className="mt-2 text-2xl font-bold text-[#001830]">
+              <h2 className="luxury-card-title mt-2 text-2xl">
                 {isHe ? "עוזר חכם AI" : "Smart AI Assistant"}
               </h2>
             </div>
@@ -177,11 +177,11 @@ const SupportPage = () => {
         {/* AI Response Section */}
         {aiResponse && (
           <section className="mb-8">
-            <div className="luxury-card rounded-[16px] bg-surface-cream shadow-soft-business">
-              <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-[#001830] mb-3 text-right">
+            <div className="luxury-card">
+              <h3 className="luxury-card-title mb-3 text-right text-lg">
                 {aiResponse.title}
               </h3>
-              <p className="text-sm leading-6 text-soft-navy whitespace-pre-line">
+              <p className="luxury-card-text whitespace-pre-line text-sm">
                 {aiResponse.content}
               </p>
             </div>
@@ -201,8 +201,8 @@ const SupportPage = () => {
             return (
               <div
                 key={i}
-                className={`luxury-card rounded-[16px] bg-surface-cream transition-all duration-300 ${
-                  isOpen ? "shadow-soft-business" : "hover:shadow-soft-business"
+                className={`luxury-card transition-all duration-300 ${
+                  isOpen ? "shadow-soft-business" : "hover:-translate-y-0.5 hover:shadow-soft-business"
                 }`}
               >
                 <button

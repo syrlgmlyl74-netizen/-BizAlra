@@ -100,7 +100,7 @@ const HomePage = () => {
       </div>
 
       {/* Executive feature rows */}
-      <div className="max-w-6xl mx-auto space-y-5">
+      <div className="max-w-6xl mx-auto space-y-4">
         {features.map((feature) => {
           const IconComponent = feature.icon;
 
@@ -109,14 +109,22 @@ const HomePage = () => {
               key={feature.id}
               type="button"
               onClick={() => navigate(feature.path)}
-              className="luxury-card group w-full overflow-hidden rounded-[16px] text-right transition duration-300 hover:shadow-soft-business"
+              className="luxury-card group w-full text-right transition duration-300 hover:-translate-y-0.5 hover:shadow-soft-business"
             >
-              <div className="luxury-card-inner">
-                <h3 className="luxury-card-title text-2xl">{feature.title}</h3>
-                <p className="luxury-card-text text-sm leading-7">{feature.desc}</p>
-              </div>
-              <div className="mt-6 text-sm font-normal uppercase tracking-[0.12em] text-soft-muted">
-                {isHe ? "פתח" : "Open"}
+              <div className="luxury-card-row items-start">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#001830]/10 text-[#001830]">
+                    <IconComponent size={20} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h3 className="luxury-card-title text-lg md:text-xl">{feature.title}</h3>
+                    <p className="luxury-card-text text-sm">{feature.desc}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-full bg-[#001830]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#001830]/70">
+                  {isHe ? "פתח" : "Open"}
+                </div>
               </div>
             </button>
           );
