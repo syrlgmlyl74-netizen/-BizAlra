@@ -89,7 +89,7 @@ const CreatePage = () => {
                 setSelectedTool(tool.id);
                 navigate(tool.route);
               }}
-              className={`luxury-card group w-full transition duration-300 ${isSelected ? "selected-solid" : "hover:-translate-y-0.5 hover:shadow-soft-business"}`}
+              className={`luxury-card group w-full rounded-[12px] border border-[rgba(0,15,33,0.04)] bg-[#FAF9F6] shadow-[0_4px_20px_rgba(0,15,33,0.02)] transition duration-300 ${isSelected ? "ring-1 ring-[#001830]/10" : "hover:-translate-y-0.5 hover:shadow-soft-business"}`}
             >
               <div className="luxury-card-row items-start">
                 <div className="flex items-start gap-4">
@@ -103,8 +103,8 @@ const CreatePage = () => {
                   </div>
                 </div>
 
-                <div className="rounded-full bg-[#001830]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#001830]/70">
-                  {isHe ? "פתח" : "Open"}
+                <div className="rounded-full bg-[#001830] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#FAF9F6] shadow-[0_10px_24px_rgba(0,24,48,0.12)]">
+                  {isHe ? "פתח ←" : "Open →"}
                 </div>
               </div>
             </button>
