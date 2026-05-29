@@ -198,19 +198,23 @@ button, input, textarea, select {
 
 .soft-business-card,
 .luxury-card {
-  background: #FFFFFF !important;
-  border: 1px solid #E2E8F0 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01) !important;
-  padding: 16px 24px !important;
-  min-height: 96px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-height: auto !important;
   width: 100% !important;
 }
 
 .luxury-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: block;
+}
+
+.luxury-card-row,
+.luxury-card > div {
+  border-bottom: 1px solid #F1F5F9 !important;
+  padding: 16px 0 !important;
 }
 
 .shadow-soft-business {
@@ -247,13 +251,15 @@ button, input, textarea, select {
   color: #000F21 !important;
   line-height: 1.2 !important;
   letter-spacing: -0.02em !important;
+  text-align: right !important;
 }
 
 .luxury-card-text {
   font-size: 13px !important;
   font-weight: 500 !important;
   color: #64748B !important;
-  line-height: 1.55 !important;
+  line-height: 1.5 !important;
+  text-align: right !important;
 }
 
 .luxury-card-row {
