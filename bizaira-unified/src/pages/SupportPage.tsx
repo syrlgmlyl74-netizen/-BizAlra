@@ -121,7 +121,7 @@ const SupportPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-soft-cream px-5 pt-10 pb-28" dir={isHe ? "rtl" : "ltr"}>
+    <div className="tone-shell min-h-screen bg-soft-cream px-5 pt-10 pb-28" dir={isHe ? "rtl" : "ltr"}>
       <div className="mx-auto max-w-5xl">
         <div className="mb-12 text-right">
           <p className="luxury-page-eyebrow mb-3">
@@ -136,7 +136,7 @@ const SupportPage = () => {
         </div>
 
         <section className="mb-8 space-y-4">
-          <div className="luxury-card">
+          <div className="rounded-[12px] border border-[rgba(0,15,33,0.04)] bg-[#FAF9F6] p-5 shadow-[0_4px_20px_rgba(0,15,33,0.02)] text-right">
             <div className="mb-5 text-right">
               <p className="luxury-page-eyebrow">
                 {isHe ? "עוזר חכם AI" : "Smart AI Assistant"}
@@ -157,12 +157,12 @@ const SupportPage = () => {
                   }
                 }}
                 placeholder={isHe ? "שאל שאלה..." : "Ask a question..."}
-                className="flex-1 min-w-0 rounded-[16px] border border-[var(--soft-border)] bg-surface-cream px-5 py-4 text-sm text-[#001830] placeholder:text-[#001830]/40 shadow-sm focus:border-[#001830] focus:outline-none focus:ring-2 focus:ring-[#001830]/20 transition"
+                className="flex-1 min-w-0 rounded-[12px] border border-[rgba(0,15,33,0.08)] bg-[#FAF9F6] px-5 py-4 text-sm text-[#001830] placeholder:text-[#001830]/40 shadow-[0_4px_20px_rgba(0,15,33,0.02)] focus:border-[#001830] focus:outline-none focus:ring-2 focus:ring-[#001830]/20 transition text-right"
               />
               <button
                 type="button"
                 disabled={!searchQuery.trim() || isLoading}
-                className="inline-flex min-w-[140px] items-center justify-center rounded-[16px] bg-[#001830] px-5 py-4 text-sm font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#002741] disabled:opacity-60 disabled:cursor-not-allowed"
+                className="inline-flex min-w-[140px] items-center justify-center rounded-full border border-[rgba(0,15,33,0.08)] bg-[#001830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-[#FAF9F6] transition hover:bg-[#002741] disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={handleSearch}
               >
                 {isLoading ? (isHe ? "מעבד..." : "Processing...") : isHe ? "חפש" : "Search"}
@@ -177,7 +177,7 @@ const SupportPage = () => {
         {/* AI Response Section */}
         {aiResponse && (
           <section className="mb-8">
-            <div className="luxury-card">
+            <div className="rounded-[12px] border border-[rgba(0,15,33,0.04)] bg-[#FAF9F6] p-5 shadow-[0_4px_20px_rgba(0,15,33,0.02)] text-right">
               <h3 className="luxury-card-title mb-3 text-right text-lg">
                 {aiResponse.title}
               </h3>
@@ -201,29 +201,29 @@ const SupportPage = () => {
             return (
               <div
                 key={i}
-                className={`luxury-card transition-all duration-300 ${
-                  isOpen ? "shadow-soft-business" : "hover:-translate-y-0.5 hover:shadow-soft-business"
+                className={`rounded-[12px] border border-[rgba(0,15,33,0.04)] bg-[#FAF9F6] p-0 shadow-[0_4px_20px_rgba(0,15,33,0.02)] text-right transition-all duration-300 ${
+                  isOpen ? "" : "hover:-translate-y-0.5"
                 }`}
               >
                 <button
                   onClick={() => setOpenFaq(isOpen ? null : i)}
-                  className={`group w-full flex items-center justify-between rounded-[16px] px-6 py-6 transition duration-200 text-right ${
-                    isOpen ? "text-[#001830]" : "text-[#001830] hover:bg-[#F5F5DC]"
+                  className={`group w-full flex items-center justify-between rounded-[12px] px-6 py-6 transition duration-200 text-right ${
+                    isOpen ? "text-[#001830]" : "text-[#001830] hover:bg-[#FAF9F6]"
                   }`}
                 >
                   <span className="text-base font-semibold text-[#001830] transition-colors duration-200">
                     {faq.q}
                   </span>
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-all duration-200 flex-shrink-0 ${
-                      isOpen ? "bg-[#001830] text-white" : "bg-surface-cream text-[#001830] group-hover:bg-[#001830] group-hover:text-white"
+                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 flex-shrink-0 ${
+                      isOpen ? "bg-[#001830] text-[#FAF9F6]" : "bg-[#FAF9F6] text-[#001830] group-hover:bg-[#001830] group-hover:text-[#FAF9F6]"
                     }`}
                   >
                     {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                   </div>
                 </button>
                 {isOpen && (
-                  <div className="border-t border-[var(--soft-border)] px-6 py-5 bg-surface-cream">
+                  <div className="border-t border-[rgba(0,15,33,0.06)] px-6 py-5 bg-[#FAF9F6] text-right">
                     <p className="text-sm leading-7 text-soft-muted">{faq.a}</p>
                   </div>
                 )}
